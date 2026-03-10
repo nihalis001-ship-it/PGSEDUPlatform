@@ -1,0 +1,221 @@
+import React, { useState } from 'react';
+import { 
+  format, 
+  addMonths, 
+  subMonths, 
+  startOfMonth, 
+  endOfMonth, 
+  startOfWeek, 
+  endOfWeek, 
+  isSameMonth, 
+  isSameDay, 
+  addDays, 
+  eachDayOfInterval 
+} from 'date-fns';
+import { tr } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '../lib/utils';
+
+interface Lesson {
+  id: string;
+  title: string;
+  date: Date;
+  time: string;
+  type: 'live' | 'recorded';
+}
+
+const INITIAL_LESSONS: Lesson[] = [
+  { id: '1', title: 'SSR (Özel Hizmet Talebi) Ekleme', date: new Date(), time: '14:00', type: 'live' },
+  { id: '2', title: 'Bagaj Ekleme ve Etiketleme', date: addDays(new Date(), 2), time: '10:30', type: 'recorded' },
+  { id: '3', title: 'Online Check-inli Yolcu Kabulü', date: addDays(new Date(), 5), time: '16:00', type: 'live' },
+  { id: '4', title: 'Boarding Süreçleri ve Kapı Yönetimi', date: addDays(new Date(), 1), time: '09:00', type: 'live' },
+  { id: '5', title: 'APIS Bilgileri ve Pasaport Kontrol', date: addDays(new Date(), 3), time: '11:30', type: 'recorded' },
+];
+
+export const LessonPlanner = () => {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [lessons, setLessons] = useState<Lesson[]>(INITIAL_LESSONS);
+
+  const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
+  const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(monthStart);
+  const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
+
+  const calendarDays = eachDayOfInterval({
+    start: startDate,
+    end: endDate,
+  });
+
+  const selectedDateLessons = lessons.filter(lesson => isSameDay(lesson.date, selectedDate));
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Calendar Section */}
+      <div className="lg:col-span-8 space-y-6">
+        <header className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-serif font-bold text-zinc-900">Ders Planlayıcı</h2>
+            <p className="text-zinc-500 mt-1">Eğitim takvimini yönet ve derslerini planla.</p>
+          </div>
+          <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-xl p-1 shadow-sm">
+            <button 
+              onClick={prevMonth}
+              className="p-2 hover:bg-zinc-50 rounded-lg transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5 text-zinc-600" />
+            </button>
+            <span className="px-4 font-medium text-zinc-900 min-w-[140px] text-center capitalize">
+              {format(currentMonth, 'MMMM yyyy', { locale: tr })}
+            </span>
+            <button 
+              onClick={nextMonth}
+              className="p-2 hover:bg-zinc-50 rounded-lg transition-colors"
+            >
+              <ChevronRight className="w-5 h-5 text-zinc-600" />
+            </button>
+          </div>
+        </header>
+
+        <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="grid grid-cols-7 border-bottom border-zinc-100 bg-zinc-50/50">
+            {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((day) => (
+              <div key={day} className="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                {day}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7">
+            {calendarDays.map((day, idx) => {
+              const dayLessons = lessons.filter(l => isSameDay(l.date, day));
+              const isSelected = isSameDay(day, selectedDate);
+              const isCurrentMonth = isSameMonth(day, monthStart);
+              const isToday = isSameDay(day, new Date());
+
+              return (
+                <button
+                  key={day.toString()}
+                  onClick={() => setSelectedDate(day)}
+                  className={cn(
+                    "relative h-32 p-2 border-r border-b border-zinc-100 text-left transition-all hover:bg-zinc-50/50 group",
+                    !isCurrentMonth && "bg-zinc-50/30 text-zinc-300",
+                    isSelected && "bg-orange-50/50 ring-1 ring-inset ring-orange-200"
+                  )}
+                >
+                  <span className={cn(
+                    "inline-flex items-center justify-center w-7 h-7 text-sm rounded-full transition-colors",
+                    isToday && "bg-orange-600 text-white font-bold",
+                    !isToday && isSelected && "text-orange-600 font-bold",
+                    !isToday && !isSelected && "text-zinc-700"
+                  )}>
+                    {format(day, 'd')}
+                  </span>
+                  
+                  <div className="mt-2 space-y-1">
+                    {dayLessons.slice(0, 2).map(lesson => (
+                      <div 
+                        key={lesson.id}
+                        className={cn(
+                          "text-[10px] px-1.5 py-0.5 rounded-md truncate font-medium",
+                          lesson.type === 'live' ? "bg-red-50 text-red-600 border border-red-100" : "bg-blue-50 text-blue-600 border border-blue-100"
+                        )}
+                      >
+                        {lesson.time} {lesson.title}
+                      </div>
+                    ))}
+                    {dayLessons.length > 2 && (
+                      <div className="text-[9px] text-zinc-400 pl-1">
+                        + {dayLessons.length - 2} daha
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Plus className="w-4 h-4 text-zinc-400" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Details Section */}
+      <div className="lg:col-span-4 space-y-6">
+        <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-6 sticky top-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-serif text-xl font-bold text-zinc-900">
+              {format(selectedDate, 'd MMMM', { locale: tr })}
+            </h3>
+            <button className="p-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors shadow-sm">
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {selectedDateLessons.length > 0 ? (
+              selectedDateLessons.map((lesson) => (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  key={lesson.id}
+                  className="p-4 rounded-xl border border-zinc-100 bg-zinc-50/50 space-y-3"
+                >
+                  <div className="flex items-start justify-between">
+                    <h4 className="font-semibold text-zinc-900 text-sm leading-tight">
+                      {lesson.title}
+                    </h4>
+                    <span className={cn(
+                      "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
+                      lesson.type === 'live' ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                    )}>
+                      {lesson.type === 'live' ? 'Canlı' : 'Kayıt'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 text-zinc-500">
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span className="text-xs">{lesson.time}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <CalendarIcon className="w-3.5 h-3.5" />
+                      <span className="text-xs">Ders</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <div className="py-12 text-center space-y-3">
+                <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
+                  <CalendarIcon className="w-6 h-6 text-zinc-400" />
+                </div>
+                <p className="text-zinc-500 text-sm">Bu tarih için planlanmış ders bulunmuyor.</p>
+                <button className="text-orange-600 text-sm font-medium hover:underline">
+                  Yeni ders ekle
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-zinc-100">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">Hızlı İstatistikler</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
+                <div className="text-2xl font-serif font-bold text-zinc-900">12</div>
+                <div className="text-[10px] text-zinc-500 uppercase font-bold">Toplam Ders</div>
+              </div>
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
+                <div className="text-2xl font-serif font-bold text-zinc-900">4</div>
+                <div className="text-[10px] text-zinc-500 uppercase font-bold">Bu Hafta</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
