@@ -12,10 +12,11 @@ import {
   addDays, 
   eachDayOfInterval 
 } from 'date-fns';
-import { tr } from 'date-fns/locale';
+import { tr, enUS } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
+import { Language, translations } from '../i18n';
 
 interface Lesson {
   id: string;
@@ -33,7 +34,13 @@ const INITIAL_LESSONS: Lesson[] = [
   { id: '5', title: 'APIS Bilgileri ve Pasaport Kontrol', date: addDays(new Date(), 3), time: '11:30', type: 'recorded' },
 ];
 
-export const LessonPlanner = () => {
+interface LessonPlannerProps {
+  lang: Language;
+}
+
+export const LessonPlanner = ({ lang }: LessonPlannerProps) => {
+  const t = translations[lang];
+  const locale = lang === 'tr' ? tr : enUS;
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [lessons, setLessons] = useState<Lesson[]>(INITIAL_LESSONS);
@@ -53,14 +60,26 @@ export const LessonPlanner = () => {
 
   const selectedDateLessons = lessons.filter(lesson => isSameDay(lesson.date, selectedDate));
 
+  const getTranslatedTitle = (title: string) => {
+    if (lang === 'tr') return title;
+    const titles: Record<string, string> = {
+      'SSR (Özel Hizmet Talebi) Ekleme': 'Adding SSR (Special Service Request)',
+      'Bagaj Ekleme ve Etiketleme': 'Baggage Addition and Tagging',
+      'Online Check-inli Yolcu Kabulü': 'Accepting Online Checked-in Passengers',
+      'Boarding Süreçleri ve Kapı Yönetimi': 'Boarding Processes and Gate Management',
+      'APIS Bilgileri ve Pasaport Kontrol': 'APIS Information and Passport Control'
+    };
+    return titles[title] || title;
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* Calendar Section */}
       <div className="lg:col-span-8 space-y-6">
         <header className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-serif font-bold text-zinc-900">Ders Planlayıcı</h2>
-            <p className="text-zinc-500 mt-1">Eğitim takvimini yönet ve derslerini planla.</p>
+            <h2 className="text-3xl font-serif font-bold text-zinc-900">{lang === 'tr' ? 'Ders Planlayıcı' : 'Lesson Planner'}</h2>
+            <p className="text-zinc-500 mt-1">{lang === 'tr' ? 'Eğitim takvimini yönet ve derslerini planla.' : 'Manage training calendar and plan your lessons.'}</p>
           </div>
           <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-xl p-1 shadow-sm">
             <button 
@@ -70,7 +89,7 @@ export const LessonPlanner = () => {
               <ChevronLeft className="w-5 h-5 text-zinc-600" />
             </button>
             <span className="px-4 font-medium text-zinc-900 min-w-[140px] text-center capitalize">
-              {format(currentMonth, 'MMMM yyyy', { locale: tr })}
+              {format(currentMonth, 'MMMM yyyy', { locale })}
             </span>
             <button 
               onClick={nextMonth}
@@ -83,7 +102,7 @@ export const LessonPlanner = () => {
 
         <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden">
           <div className="grid grid-cols-7 border-bottom border-zinc-100 bg-zinc-50/50">
-            {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((day) => (
+            {(lang === 'tr' ? ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']).map((day) => (
               <div key={day} className="py-3 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                 {day}
               </div>
@@ -124,12 +143,12 @@ export const LessonPlanner = () => {
                           lesson.type === 'live' ? "bg-red-50 text-red-600 border border-red-100" : "bg-blue-50 text-blue-600 border border-blue-100"
                         )}
                       >
-                        {lesson.time} {lesson.title}
+                        {lesson.time} {getTranslatedTitle(lesson.title)}
                       </div>
                     ))}
                     {dayLessons.length > 2 && (
                       <div className="text-[9px] text-zinc-400 pl-1">
-                        + {dayLessons.length - 2} daha
+                        + {dayLessons.length - 2} {lang === 'tr' ? 'daha' : 'more'}
                       </div>
                     )}
                   </div>
@@ -149,7 +168,7 @@ export const LessonPlanner = () => {
         <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-6 sticky top-8">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-serif text-xl font-bold text-zinc-900">
-              {format(selectedDate, 'd MMMM', { locale: tr })}
+              {format(selectedDate, 'd MMMM', { locale })}
             </h3>
             <button className="p-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors shadow-sm">
               <Plus className="w-5 h-5" />
@@ -167,13 +186,13 @@ export const LessonPlanner = () => {
                 >
                   <div className="flex items-start justify-between">
                     <h4 className="font-semibold text-zinc-900 text-sm leading-tight">
-                      {lesson.title}
+                      {getTranslatedTitle(lesson.title)}
                     </h4>
                     <span className={cn(
                       "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
                       lesson.type === 'live' ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
                     )}>
-                      {lesson.type === 'live' ? 'Canlı' : 'Kayıt'}
+                      {lesson.type === 'live' ? (lang === 'tr' ? 'Canlı' : 'Live') : (lang === 'tr' ? 'Kayıt' : 'Record')}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 text-zinc-500">
@@ -183,7 +202,7 @@ export const LessonPlanner = () => {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <CalendarIcon className="w-3.5 h-3.5" />
-                      <span className="text-xs">Ders</span>
+                      <span className="text-xs">{lang === 'tr' ? 'Ders' : 'Lesson'}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -193,24 +212,24 @@ export const LessonPlanner = () => {
                 <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
                   <CalendarIcon className="w-6 h-6 text-zinc-400" />
                 </div>
-                <p className="text-zinc-500 text-sm">Bu tarih için planlanmış ders bulunmuyor.</p>
+                <p className="text-zinc-500 text-sm">{lang === 'tr' ? 'Bu tarih için planlanmış ders bulunmuyor.' : 'No lessons scheduled for this date.'}</p>
                 <button className="text-orange-600 text-sm font-medium hover:underline">
-                  Yeni ders ekle
+                  {lang === 'tr' ? 'Yeni ders ekle' : 'Add new lesson'}
                 </button>
               </div>
             )}
           </div>
 
           <div className="mt-8 pt-6 border-t border-zinc-100">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">Hızlı İstatistikler</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">{lang === 'tr' ? 'Hızlı İstatistikler' : 'Quick Stats'}</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
                 <div className="text-2xl font-serif font-bold text-zinc-900">12</div>
-                <div className="text-[10px] text-zinc-500 uppercase font-bold">Toplam Ders</div>
+                <div className="text-[10px] text-zinc-500 uppercase font-bold">{lang === 'tr' ? 'Toplam Ders' : 'Total Lessons'}</div>
               </div>
               <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
                 <div className="text-2xl font-serif font-bold text-zinc-900">4</div>
-                <div className="text-[10px] text-zinc-500 uppercase font-bold">Bu Hafta</div>
+                <div className="text-[10px] text-zinc-500 uppercase font-bold">{lang === 'tr' ? 'Bu Hafta' : 'This Week'}</div>
               </div>
             </div>
           </div>

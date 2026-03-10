@@ -36,5 +36,8 @@ export interface LessonRequest {
   instructorId: string;
   studentName: string;
   dates: string[];
+  time?: string;
   status: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string;
+  alternativeDate?: string;
 }

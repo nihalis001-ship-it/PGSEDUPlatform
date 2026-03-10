@@ -3,13 +3,16 @@ import { User, Mail, Shield, BookOpen, CheckCircle2, Trophy, ArrowRight } from '
 import { motion } from 'motion/react';
 import { User as UserType, Video } from '../types';
 import { cn } from '../lib/utils';
+import { Language, translations } from '../i18n';
 
 interface UserProfileProps {
   user: UserType;
   videos: Video[];
+  lang: Language;
 }
 
-export const UserProfile = ({ user, videos }: UserProfileProps) => {
+export const UserProfile = ({ user, videos, lang }: UserProfileProps) => {
+  const t = translations[lang];
   const progress = Math.round((user.completedLessons.length / videos.length) * 100);
 
   return (
@@ -33,22 +36,22 @@ export const UserProfile = ({ user, videos }: UserProfileProps) => {
             </div>
             <div className="flex items-center gap-2 text-zinc-500 text-sm">
               <Shield className="w-4 h-4" />
-              {user.role}
+              {lang === 'tr' ? (user.role === 'student' ? 'Öğrenci' : 'Eğitmen') : (user.role === 'student' ? 'Student' : 'Instructor')}
             </div>
           </div>
           <div className="pt-4 flex gap-3 justify-center md:justify-start">
             <button className="px-6 py-2 bg-zinc-900 text-white rounded-xl text-sm font-bold hover:bg-zinc-800 transition-all">
-              Profili Düzenle
+              {lang === 'tr' ? 'Profili Düzenle' : 'Edit Profile'}
             </button>
             <button className="px-6 py-2 border border-zinc-200 text-zinc-600 rounded-xl text-sm font-bold hover:bg-zinc-50 transition-all">
-              Sertifikalarım
+              {lang === 'tr' ? 'Sertifikalarım' : 'My Certificates'}
             </button>
           </div>
         </div>
 
         <div className="w-full md:w-64 bg-zinc-50 rounded-2xl p-6 border border-zinc-100 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Genel İlerleme</span>
+            <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{t.progress}</span>
             <span className="text-lg font-serif font-bold text-orange-600">%{progress}</span>
           </div>
           <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
@@ -59,7 +62,7 @@ export const UserProfile = ({ user, videos }: UserProfileProps) => {
             />
           </div>
           <p className="text-[10px] text-zinc-500 text-center">
-            {user.completedLessons.length} / {videos.length} ders tamamlandı
+            {user.completedLessons.length} / {videos.length} {lang === 'tr' ? 'ders tamamlandı' : 'lessons completed'}
           </p>
         </div>
       </header>
@@ -68,7 +71,7 @@ export const UserProfile = ({ user, videos }: UserProfileProps) => {
         <div className="lg:col-span-2 space-y-6">
           <h3 className="text-xl font-serif font-bold text-zinc-900 flex items-center gap-3">
             <BookOpen className="w-6 h-6 text-orange-600" />
-            Kayıtlı Kurslarım
+            {lang === 'tr' ? 'Kayıtlı Kurslarım' : 'My Enrolled Courses'}
           </h3>
           
           <div className="grid grid-cols-1 gap-4">
@@ -81,7 +84,16 @@ export const UserProfile = ({ user, videos }: UserProfileProps) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-bold text-zinc-900 truncate group-hover:text-orange-600 transition-colors">
-                      {video.title}
+                      {lang === 'tr' ? video.title : (
+                        video.id === '1' ? 'Baggage Acceptance Procedures' :
+                        video.id === '2' ? 'Dangerous Goods (DGR) Awareness' :
+                        video.id === '3' ? 'Advanced DCS Check-in' :
+                        video.id === '4' ? 'Passenger Boarding Rules' :
+                        video.id === '5' ? 'Special Passenger Services' :
+                        video.id === '6' ? 'Emergency Procedures' :
+                        video.id === '7' ? 'Flight Irregularity Management' :
+                        'Security Awareness'
+                      )}
                     </h4>
                     <p className="text-xs text-zinc-500">{video.instructor}</p>
                   </div>
@@ -89,11 +101,11 @@ export const UserProfile = ({ user, videos }: UserProfileProps) => {
                     {isCompleted ? (
                       <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
                         <CheckCircle2 className="w-3 h-3" />
-                        Tamamlandı
+                        {t.completed}
                       </div>
                     ) : (
                       <div className="text-[10px] font-bold text-zinc-400 uppercase">
-                        Devam Ediyor
+                        {lang === 'tr' ? 'Devam Ediyor' : 'In Progress'}
                       </div>
                     )}
                     <button className="p-2 hover:bg-zinc-50 rounded-lg text-zinc-400">
@@ -109,14 +121,14 @@ export const UserProfile = ({ user, videos }: UserProfileProps) => {
         <div className="space-y-6">
           <h3 className="text-xl font-serif font-bold text-zinc-900 flex items-center gap-3">
             <Trophy className="w-6 h-6 text-amber-500" />
-            Başarımlar
+            {lang === 'tr' ? 'Başarımlar' : 'Achievements'}
           </h3>
           
           <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
             {[
-              { id: '1', title: 'Hızlı Başlangıç', desc: 'İlk dersini tamamladın', icon: '🚀', active: true },
-              { id: '2', title: 'Bilgi Küpü', desc: '5 testi başarıyla geçtin', icon: '🧠', active: user.completedLessons.length >= 5 },
-              { id: '3', title: 'Sadık Öğrenci', desc: '7 gün üst üste giriş yaptın', icon: '🔥', active: false },
+              { id: '1', title: lang === 'tr' ? 'Hızlı Başlangıç' : 'Fast Start', desc: lang === 'tr' ? 'İlk dersini tamamladın' : 'Completed your first lesson', icon: '🚀', active: true },
+              { id: '2', title: lang === 'tr' ? 'Bilgi Küpü' : 'Knowledge Cube', desc: lang === 'tr' ? '5 testi başarıyla geçtin' : 'Passed 5 quizzes successfully', icon: '🧠', active: user.completedLessons.length >= 5 },
+              { id: '3', title: lang === 'tr' ? 'Sadık Öğrenci' : 'Loyal Student', desc: lang === 'tr' ? '7 gün üst üste giriş yaptın' : 'Logged in for 7 consecutive days', icon: '🔥', active: false },
             ].map(badge => (
               <div key={badge.id} className={cn(
                 "flex items-center gap-4 p-3 rounded-2xl border transition-all",

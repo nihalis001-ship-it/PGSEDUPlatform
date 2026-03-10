@@ -8,6 +8,8 @@ import { Settings as SettingsTab } from './components/Settings';
 import { NotificationCenter } from './components/NotificationCenter';
 import { Dashboard } from './components/Dashboard';
 import { AIAssistant } from './components/AIAssistant';
+import { Login } from './components/Login';
+import { MandatoryNotification } from './components/MandatoryNotification';
 import { 
   LayoutDashboard, 
   Video, 
@@ -49,6 +51,8 @@ const VIDEOS: VideoType[] = [
 ];
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showMandatoryPopup, setShowMandatoryPopup] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [lang, setLang] = useState<Language>('tr');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -65,6 +69,24 @@ export default function App() {
 
   const t = translations[lang];
 
+  const handleLogin = (name: string, role: 'Öğrenci' | 'Eğitmen') => {
+    setUser(prev => ({
+      ...prev,
+      name,
+      role,
+      avatar: role === 'Öğrenci' ? 'NS' : 'ED',
+      email: role === 'Öğrenci' ? 'nihalis001@gmail.com' : 'simge.demir@flypgs.com'
+    }));
+    setIsLoggedIn(true);
+    setShowMandatoryPopup(true);
+    setActiveTab(role === 'Öğrenci' ? 'dashboard' : 'upcoming');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setActiveTab('dashboard');
+  };
+
   const handleCompleteLesson = (id: string) => {
     if (!user.completedLessons.includes(id)) {
       setUser(prev => ({
@@ -78,21 +100,8 @@ export default function App() {
     setRequests(prev => [...prev, newRequest]);
   };
 
-  const handleUpdateRequestStatus = (id: string, status: 'approved' | 'rejected') => {
-    setRequests(prev => prev.map(req => req.id === id ? { ...req, status } : req));
-  };
-
-  const toggleRole = () => {
-    setUser(prev => {
-      const newRole = prev.role === 'Öğrenci' ? 'Eğitmen' : 'Öğrenci';
-      setActiveTab(newRole === 'Öğrenci' ? 'dashboard' : 'upcoming');
-      return {
-        ...prev,
-        role: newRole,
-        avatar: newRole === 'Öğrenci' ? 'NS' : 'ED',
-        name: newRole === 'Öğrenci' ? 'Nihal Işık' : 'Simge Demir'
-      };
-    });
+  const handleUpdateRequestStatus = (id: string, status: 'approved' | 'rejected', rejectionReason?: string, alternativeDate?: string) => {
+    setRequests(prev => prev.map(req => req.id === id ? { ...req, status, rejectionReason, alternativeDate } : req));
   };
 
   const navItems = user.role === 'Öğrenci' ? [
@@ -111,6 +120,10 @@ export default function App() {
     { id: 'profile', label: t.profile, icon: UserIcon },
     { id: 'settings', label: t.settings, icon: Settings },
   ];
+
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} lang={lang} setLang={setLang} />;
+  }
 
   return (
     <div className="flex min-h-screen bg-zinc-50">
@@ -200,13 +213,9 @@ export default function App() {
             </div>
           </button>
           <button 
-            onClick={toggleRole}
-            className="w-full flex items-center justify-center gap-2 py-1.5 text-[10px] font-bold text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-zinc-400 hover:text-red-600 transition-colors"
           >
-            <UserIcon className="w-3 h-3" />
-            Rol Değiştir
-          </button>
-          <button className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-zinc-400 hover:text-red-600 transition-colors">
             <LogOut className="w-3.5 h-3.5" />
             {t.logout}
           </button>
@@ -267,6 +276,7 @@ export default function App() {
                   user={user} 
                   videos={VIDEOS} 
                   onNavigate={(tab) => setActiveTab(tab as Tab)} 
+                  lang={lang}
                 />
               )}
               {activeTab === 'videos' && (
@@ -274,9 +284,10 @@ export default function App() {
                   videos={VIDEOS} 
                   completedLessons={user.completedLessons}
                   onComplete={handleCompleteLesson}
+                  lang={lang}
                 />
               )}
-              {activeTab === 'planner' && <LessonPlanner />}
+              {activeTab === 'planner' && <LessonPlanner lang={lang} />}
               {activeTab === 'request' && (
                 <RequestTab 
                   lang={lang} 
@@ -286,14 +297,88 @@ export default function App() {
                   onUpdateStatus={handleUpdateRequestStatus}
                 />
               )}
-              {activeTab === 'profile' && <UserProfile user={user} videos={VIDEOS} />}
+              {activeTab === 'profile' && <UserProfile user={user} videos={VIDEOS} lang={lang} />}
               {activeTab === 'errors' && <ErrorLibrary lang={lang} />}
               {activeTab === 'settings' && <SettingsTab lang={lang} />}
-              {activeTab === 'ai' && <AIAssistant />}
+              {activeTab === 'ai' && <AIAssistant lang={lang} />}
               {activeTab === 'upcoming' && (
-                <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
-                  <h2 className="text-2xl font-serif font-bold text-zinc-900 mb-4">{t.upcomingLessons}</h2>
-                  <p className="text-zinc-500">Henüz planlanmış bir eğitiminiz bulunmamaktadır.</p>
+                <div className="space-y-8">
+                  <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
+                    <h2 className="text-2xl font-serif font-bold text-zinc-900 mb-6 flex items-center gap-3">
+                      <Calendar className="w-6 h-6 text-orange-600" />
+                      {t.upcomingLessons}
+                    </h2>
+                    <div className="space-y-4">
+                      {requests.filter(r => r.status === 'approved' && (user.role === 'Eğitmen' ? true : r.studentName === user.name)).length === 0 ? (
+                        <p className="text-zinc-500">Henüz planlanmış bir eğitiminiz bulunmamaktadır.</p>
+                      ) : (
+                        requests.filter(r => r.status === 'approved' && (user.role === 'Eğitmen' ? true : r.studentName === user.name)).map(req => (
+                          <div key={req.id} className="p-6 rounded-2xl border border-zinc-100 bg-zinc-50/50 flex items-center justify-between">
+                            <div className="space-y-2">
+                              <h4 className="font-bold text-zinc-900">{req.title}</h4>
+                              <div className="flex items-center gap-4 text-xs text-zinc-500">
+                                <div className="flex items-center gap-1.5">
+                                  <UserIcon className="w-3.5 h-3.5" />
+                                  {req.studentName}
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  {req.dates.join(', ')}
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <Clock className="w-3.5 h-3.5" />
+                                  {req.time}
+                                </div>
+                              </div>
+                            </div>
+                            <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Onaylandı</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {user.role === 'Eğitmen' && (
+                    <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
+                      <h3 className="text-xl font-serif font-bold text-zinc-900 mb-6 flex items-center gap-3">
+                        <Bell className="w-6 h-6 text-orange-600" />
+                        Bekleyen Onay Talepleri
+                      </h3>
+                      <div className="space-y-4">
+                        {requests.filter(r => r.status === 'pending').length === 0 ? (
+                          <p className="text-zinc-500">Bekleyen onay talebi bulunmuyor.</p>
+                        ) : (
+                          requests.filter(r => r.status === 'pending').map(req => (
+                            <div key={req.id} className="p-6 rounded-2xl border border-zinc-100 bg-orange-50/30 flex items-center justify-between">
+                              <div className="space-y-2">
+                                <h4 className="font-bold text-zinc-900">{req.title}</h4>
+                                <div className="flex items-center gap-4 text-xs text-zinc-500">
+                                  <div className="flex items-center gap-1.5">
+                                    <UserIcon className="w-3.5 h-3.5" />
+                                    {req.studentName}
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <Calendar className="w-3.5 h-3.5" />
+                                    {req.dates.join(', ')}
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    {req.time}
+                                  </div>
+                                </div>
+                              </div>
+                              <button 
+                                onClick={() => setActiveTab('request')}
+                                className="px-4 py-2 bg-orange-600 text-white text-xs font-bold rounded-xl hover:bg-orange-700 transition-all"
+                              >
+                                Talebi Yönet
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               {activeTab === 'upload' && (
@@ -321,6 +406,13 @@ export default function App() {
           </AnimatePresence>
         </div>
       </main>
+
+      {showMandatoryPopup && (
+        <MandatoryNotification 
+          lang={lang} 
+          onClose={() => setShowMandatoryPopup(false)} 
+        />
+      )}
     </div>
   );
 }

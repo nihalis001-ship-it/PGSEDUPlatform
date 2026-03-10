@@ -4,15 +4,26 @@ import { Send, Bot, User, Sparkles, Loader2, RefreshCw } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
+import { Language, translations } from '../i18n';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export function AIAssistant() {
+interface AIAssistantProps {
+  lang: Language;
+}
+
+export function AIAssistant({ lang }: AIAssistantProps) {
+  const t = translations[lang];
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Merhaba! Ben Pegasus Edu Yapay Zeka Asistanıyım. Havayolu prosedürleri, check-in işlemleri veya platform kullanımı hakkında size nasıl yardımcı olabilirim?' }
+    { 
+      role: 'assistant', 
+      content: lang === 'tr' 
+        ? 'Merhaba! Ben Pegasus Edu Yapay Zeka Asistanıyım. Havayolu prosedürleri, check-in işlemleri veya platform kullanımı hakkında size nasıl yardımcı olabilirim?' 
+        : 'Hello! I am the Pegasus Edu AI Assistant. How can I help you with airline procedures, check-in processes, or platform usage?'
+    }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,22 +45,31 @@ export function AIAssistant() {
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const response = await ai.models.generateContent({
+      
+      // Filter out the initial greeting if it's the first message, 
+      // as Gemini expects the conversation to start with a 'user' message.
+      const history = messages.slice(1).map(m => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.content }]
+      }));
+
+      const chat = ai.chats.create({
         model: "gemini-3-flash-preview",
-        contents: [...messages, { role: 'user', content: userMessage }].map(m => ({
-          role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.content }]
-        })),
         config: {
-          systemInstruction: "Sen Pegasus Hava Yolları'nın eğitim platformu olan Pegasus Edu'nun yapay zeka asistanısın. Görevin, yer hizmetleri personeline eğitimlerinde yardımcı olmak, havayolu prosedürleri (SSR ekleme, bagaj kuralları, boarding süreçleri vb.) hakkında bilgi vermek ve platformu nasıl kullanacaklarını anlatmaktır. Yanıtların profesyonel, yardımsever ve Pegasus kurumsal kimliğine uygun olmalıdır. Eğer bilmediğin bir prosedür sorulursa, en güncel bilgi için 'Pegasus Operasyon El Kitabı'na (OM) bakmalarını önermelisin.",
-        }
+          systemInstruction: lang === 'tr' 
+            ? "Sen Pegasus Hava Yolları'nın eğitim platformu olan Pegasus Edu'nun yapay zeka asistanısın. Görevin, yer hizmetleri personeline eğitimlerinde yardımcı olmak, havayolu prosedürleri (SSR ekleme, bagaj kuralları, boarding süreçleri vb.) hakkında bilgi vermek ve platformu nasıl kullanacaklarını anlatmaktır. Yanıtların profesyonel, yardımsever ve Pegasus kurumsal kimliğine uygun olmalıdır. Eğer bilmediğin bir prosedür sorulursa, en güncel bilgi için 'Pegasus Operasyon El Kitabı'na (OM) bakmalarını önermelisin."
+            : "You are the AI assistant for Pegasus Edu, the training platform of Pegasus Airlines. Your task is to assist ground handling personnel in their training, provide information about airline procedures (adding SSR, baggage rules, boarding processes, etc.), and explain how to use the platform. Your responses should be professional, helpful, and in line with Pegasus's corporate identity. If asked about a procedure you don't know, you should suggest checking the 'Pegasus Operations Manual' (OM) for the most up-to-date information.",
+        },
+        history: history as any
       });
 
-      const aiResponse = response.text || "Üzgünüm, şu an yanıt veremiyorum. Lütfen tekrar deneyin.";
+      const result = await chat.sendMessage({ message: userMessage });
+      const aiResponse = result.text || (lang === 'tr' ? "Üzgünüm, şu an yanıt veremiyorum. Lütfen tekrar deneyin." : "Sorry, I cannot respond right now. Please try again.");
+      
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
     } catch (error) {
       console.error("AI Error:", error);
-      setMessages(prev => [...prev, { role: 'assistant', content: "Bir hata oluştu. Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: lang === 'tr' ? "Bir hata oluştu. Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin." : "An error occurred. Please check your internet connection or try again later." }]);
     } finally {
       setIsLoading(false);
     }
@@ -64,17 +84,17 @@ export function AIAssistant() {
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-zinc-900">Pegasus AI Asistan</h2>
+            <h2 className="text-lg font-bold text-zinc-900">{lang === 'tr' ? 'Pegasus AI Asistan' : 'Pegasus AI Assistant'}</h2>
             <p className="text-xs text-zinc-500 font-medium flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Çevrimiçi • Prosedür Uzmanı
+              {lang === 'tr' ? 'Çevrimiçi • Prosedür Uzmanı' : 'Online • Procedure Expert'}
             </p>
           </div>
         </div>
         <button 
           onClick={() => setMessages([messages[0]])}
           className="p-2 text-zinc-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-          title="Sohbeti Sıfırla"
+          title={lang === 'tr' ? "Sohbeti Sıfırla" : "Reset Chat"}
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -126,7 +146,7 @@ export function AIAssistant() {
             </div>
             <div className="bg-zinc-50 border border-zinc-100 p-4 rounded-2xl flex items-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin text-orange-600" />
-              <span className="text-sm text-zinc-500 font-medium">Pegasus AI düşünüyor...</span>
+              <span className="text-sm text-zinc-500 font-medium">{lang === 'tr' ? 'Pegasus AI düşünüyor...' : 'Pegasus AI is thinking...'}</span>
             </div>
           </motion.div>
         )}
@@ -140,7 +160,7 @@ export function AIAssistant() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Bir soru sorun (örn: SSR ekleme nasıl yapılır?)"
+            placeholder={lang === 'tr' ? "Bir soru sorun (örn: SSR ekleme nasıl yapılır?)" : "Ask a question (e.g., How to add SSR?)"}
             className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all pr-14"
           />
           <button
@@ -157,7 +177,9 @@ export function AIAssistant() {
           </button>
         </div>
         <p className="mt-3 text-[10px] text-center text-zinc-400 font-medium">
-          Yapay zeka hatalar yapabilir. Önemli prosedürler için her zaman resmi el kitaplarını kontrol edin.
+          {lang === 'tr' 
+            ? 'Yapay zeka hatalar yapabilir. Önemli prosedürler için her zaman resmi el kitaplarını kontrol edin.' 
+            : 'AI can make mistakes. Always check official manuals for important procedures.'}
         </p>
       </div>
     </div>

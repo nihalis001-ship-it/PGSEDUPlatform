@@ -13,46 +13,49 @@ import {
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { Video, User } from '../types';
+import { Language, translations } from '../i18n';
 
 interface DashboardProps {
   user: User;
   videos: Video[];
   onNavigate: (tab: string) => void;
+  lang: Language;
 }
 
-export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
+export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) => {
+  const t = translations[lang];
   const completionRate = Math.round((user.completedLessons.length / videos.length) * 100);
   
   const quickActions = [
-    { id: 'videos', label: 'Eğitimlere Göz At', icon: BookOpen, color: 'bg-blue-500' },
-    { id: 'planner', label: 'Takvimimi Gör', icon: Calendar, color: 'bg-purple-500' },
-    { id: 'request', label: 'Randevu Al', icon: Clock, color: 'bg-orange-500' },
-    { id: 'errors', label: 'Hata Kütüphanesi', icon: AlertCircle, color: 'bg-red-500' },
+    { id: 'videos', label: t.browseCourses, icon: BookOpen, color: 'bg-blue-500' },
+    { id: 'planner', label: t.viewCalendar, icon: Calendar, color: 'bg-purple-500' },
+    { id: 'request', label: t.getAppointment, icon: Clock, color: 'bg-orange-500' },
+    { id: 'errors', label: t.errorLibrary, icon: AlertCircle, color: 'bg-red-500' },
   ];
 
   const upcomingLessons = [
-    { id: '1', title: 'Tehlikeli Maddeler (DGR) Eğitimi', time: 'Yarın, 10:00', type: 'critical', category: 'Operasyon' },
-    { id: '2', title: 'İleri Seviye DCS Kullanımı', time: '12 Mart, 14:30', type: 'advanced', category: 'Sistem' },
-    { id: '3', title: 'Müşteri İlişkileri Temelleri', time: '15 Mart, 09:00', type: 'basic', category: 'Hizmet' },
+    { id: '1', title: lang === 'tr' ? 'Tehlikeli Maddeler (DGR) Eğitimi' : 'Dangerous Goods (DGR) Training', time: lang === 'tr' ? 'Yarın, 10:00' : 'Tomorrow, 10:00', type: 'critical', category: lang === 'tr' ? 'Operasyon' : 'Operation' },
+    { id: '2', title: lang === 'tr' ? 'İleri Seviye DCS Kullanımı' : 'Advanced DCS Usage', time: lang === 'tr' ? '12 Mart, 14:30' : 'March 12, 14:30', type: 'advanced', category: lang === 'tr' ? 'Sistem' : 'System' },
+    { id: '3', title: lang === 'tr' ? 'Müşteri İlişkileri Temelleri' : 'Customer Relations Basics', time: lang === 'tr' ? '15 Mart, 09:00' : 'March 15, 09:00', type: 'basic', category: lang === 'tr' ? 'Service' : 'Service' },
   ];
 
   const recentQuiz = {
-    title: 'Bagaj Kabul Süreçleri',
+    title: lang === 'tr' ? 'Bagaj Kabul Süreçleri' : 'Baggage Acceptance Processes',
     score: 85,
-    date: '2 saat önce',
-    status: 'Başarılı'
+    date: lang === 'tr' ? '2 saat önce' : '2 hours ago',
+    status: lang === 'tr' ? 'Başarılı' : 'Successful'
   };
 
   const feedback = [
-    { id: '1', text: 'Quiz sonucunda %85 başarı sağladınız. Harika gidiyorsunuz!', type: 'success' },
-    { id: '2', text: 'Bagaj ekleme videosunu tekrar izlemeniz önerilir.', type: 'info' }
+    { id: '1', text: lang === 'tr' ? 'Quiz sonucunda %85 başarı sağladınız. Harika gidiyorsunuz!' : 'You achieved 85% success in the quiz. You are doing great!', type: 'success' },
+    { id: '2', text: lang === 'tr' ? 'Bagaj ekleme videosunu tekrar izlemeniz önerilir.' : 'It is recommended to watch the baggage addition video again.', type: 'info' }
   ];
 
   return (
     <div className="space-y-8">
       <header>
-        <h2 className="text-3xl font-serif font-bold text-zinc-900">Hoş Geldin, {user.name.split(' ')[0]}!</h2>
-        <p className="text-zinc-500 mt-1">Eğitim yolculuğunda bugün neler var?</p>
+        <h2 className="text-3xl font-serif font-bold text-zinc-900">{t.welcome}, {user.name.split(' ')[0]}!</h2>
+        <p className="text-zinc-500 mt-1">{t.todayJourney}</p>
       </header>
 
       {/* Quick Access */}
@@ -75,36 +78,36 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           icon={CheckCircle2} 
-          label="Tamamlanan Dersler" 
+          label={t.completedLessons} 
           value={`${user.completedLessons.length}/${videos.length}`}
-          subValue={`%${completionRate} İlerleme`}
+          subValue={`%${completionRate} ${t.progress}`}
           color="text-emerald-600"
           bgColor="bg-emerald-50"
           onClick={() => onNavigate('videos')}
         />
         <StatCard 
           icon={BookOpen} 
-          label="Aktif Eğitimler" 
+          label={t.activeTrainings} 
           value="3"
-          subValue="Devam eden modüller"
+          subValue={t.ongoingModules}
           color="text-blue-600"
           bgColor="bg-blue-50"
           onClick={() => onNavigate('videos')}
         />
         <StatCard 
           icon={Award} 
-          label="Sertifikalar" 
+          label={t.certificates} 
           value="2"
-          subValue="Kazanılan yetkinlikler"
+          subValue={t.earnedCompetencies}
           color="text-amber-600"
           bgColor="bg-amber-50"
           onClick={() => onNavigate('profile')}
         />
         <StatCard 
           icon={TrendingUp} 
-          label="Başarı Puanı" 
+          label={t.successScore} 
           value="88"
-          subValue="Genel ortalama"
+          subValue={t.generalAverage}
           color="text-orange-600"
           bgColor="bg-orange-50"
           onClick={() => onNavigate('profile')}
@@ -117,8 +120,8 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
           {/* Upcoming Lessons */}
           <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
-              <h3 className="font-serif text-xl font-bold text-zinc-900">Yaklaşan Dersler</h3>
-              <button className="text-sm font-medium text-orange-600 hover:underline">Tümünü Gör</button>
+              <h3 className="font-serif text-xl font-bold text-zinc-900">{t.upcomingLessonsTitle}</h3>
+              <button className="text-sm font-medium text-orange-600 hover:underline">{t.viewAll}</button>
             </div>
             <div className="divide-y divide-zinc-100">
               {upcomingLessons.map((lesson) => (
@@ -150,7 +153,7 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
 
           {/* Recent Quiz */}
           <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
-            <h3 className="font-serif text-xl font-bold text-zinc-900 mb-6">Son Yapılan Quiz</h3>
+            <h3 className="font-serif text-xl font-bold text-zinc-900 mb-6">{t.recentQuiz}</h3>
             <div className="flex items-center gap-6">
               <div className="relative w-24 h-24 flex items-center justify-center">
                 <svg className="w-full h-full -rotate-90">
@@ -169,8 +172,8 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
               </div>
               <div className="flex-1">
                 <h4 className="font-bold text-zinc-900 text-lg">{recentQuiz.title}</h4>
-                <p className="text-zinc-500 text-sm mt-1">{recentQuiz.date} tamamlandı • {recentQuiz.status}</p>
-                <button className="mt-4 text-sm font-bold text-orange-600 hover:text-orange-700">Detayları İncele</button>
+                <p className="text-zinc-500 text-sm mt-1">{recentQuiz.date} {lang === 'tr' ? 'tamamlandı' : 'completed'} • {recentQuiz.status}</p>
+                <button className="mt-4 text-sm font-bold text-orange-600 hover:text-orange-700">{t.viewDetails}</button>
               </div>
             </div>
           </section>
@@ -182,7 +185,7 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
           <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
             <h3 className="font-serif text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-orange-600" />
-              Geri Bildirimler
+              {t.feedbacks}
             </h3>
             <div className="space-y-4">
               {feedback.map((item) => (
@@ -200,11 +203,11 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
           <section className="bg-zinc-900 rounded-2xl p-6 text-white">
             <div className="flex items-center gap-2 text-orange-400 mb-4">
               <Calendar className="w-4 h-4" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Son Eklenen Plan</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">{t.latestPlan}</span>
             </div>
-            <h4 className="text-lg font-bold mb-2">Haftalık Check-in Uzmanlığı</h4>
+            <h4 className="text-lg font-bold mb-2">{lang === 'tr' ? 'Haftalık Check-in Uzmanlığı' : 'Weekly Check-in Expertise'}</h4>
             <p className="text-zinc-400 text-xs mb-6 leading-relaxed">
-              Bu hafta SSR işlemleri ve özel yolcu hizmetleri üzerine odaklanacağız.
+              {lang === 'tr' ? 'Bu hafta SSR işlemleri ve özel yolcu hizmetleri üzerine odaklanacağız.' : 'This week we will focus on SSR processes and special passenger services.'}
             </p>
             <div className="flex items-center justify-between">
               <div className="flex -space-x-2">
@@ -215,7 +218,7 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
                 ))}
               </div>
               <button className="bg-white text-zinc-900 px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-400 transition-colors">
-                Plana Git
+                {t.goToPlan}
               </button>
             </div>
           </section>
@@ -224,7 +227,7 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
           <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
             <h3 className="font-serif text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
               <Award className="w-5 h-5 text-amber-500" />
-              Liderlik Tablosu
+              {t.leaderboard}
             </h3>
             <div className="space-y-4">
               {[
@@ -242,13 +245,13 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
                   </div>
                   <div className="flex-1">
                     <p className="text-xs font-bold text-zinc-900">{item.name}</p>
-                    <p className="text-[10px] text-zinc-500">{item.score} Puan</p>
+                    <p className="text-[10px] text-zinc-500">{item.score} {t.points}</p>
                   </div>
                 </div>
               ))}
             </div>
             <button className="w-full mt-4 py-2 text-xs font-bold text-zinc-400 hover:text-orange-600 transition-colors">
-              Tüm Sıralamayı Gör
+              {t.viewFullRanking}
             </button>
           </section>
 
@@ -256,11 +259,11 @@ export const Dashboard = ({ user, videos, onNavigate }: DashboardProps) => {
           <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
             <div className="flex items-center gap-2 text-zinc-400 mb-4">
               <AlertCircle className="w-4 h-4" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Sistem Durumu</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">{t.systemStatus}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-sm font-medium text-zinc-700">Tüm sistemler çalışıyor</span>
+              <span className="text-sm font-medium text-zinc-700">{t.allSystemsOperational}</span>
             </div>
           </section>
         </div>
