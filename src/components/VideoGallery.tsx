@@ -11,15 +11,64 @@ const QUIZZES: Record<string, Quiz> = {
     id: 'q1',
     videoId: '1',
     questions: [
-      { id: '1', text: 'React hangi şirket tarafından geliştirilmiştir?', options: ['Google', 'Meta (Facebook)', 'Microsoft', 'Amazon'], correctAnswer: 1 },
-      { id: '2', text: 'Hangisi bir React Hook\'udur?', options: ['useEffect', 'useAction', 'useEvent', 'useStore'], correctAnswer: 0 },
+      { id: '1', text: 'Heavy etiketi hangi ağırlıktan itibaren bagaja yapıştırılır?', options: ['15 kg', '20 kg', '23 kg', '32 kg'], correctAnswer: 2 },
+      { id: '2', text: 'Bir bagajın kabul edilebileceği maksimum ağırlık sınırı nedir?', options: ['23 kg', '30 kg', '32 kg', '40 kg'], correctAnswer: 2 },
     ]
   },
   '2': {
     id: 'q2',
     videoId: '2',
     questions: [
-      { id: '1', text: 'UX neyin kısaltmasıdır?', options: ['User Experience', 'User Extension', 'Universal X-platform', 'User Example'], correctAnswer: 0 },
+      { id: '1', text: 'Ücretsiz bagaj hakkını aşan yolcular için hangi SSR kodu kullanılır?', options: ['GAEX', 'SPEQ', 'PETC', 'CBBG'], correctAnswer: 0 },
+      { id: '2', text: 'Düşük paket (Light) alan bir yolcunun kabin bagajı limiti nedir?', options: ['8 kg', '12 kg', 'Sadece koltuk altı (3kg)', 'Limit yok'], correctAnswer: 2 },
+    ]
+  },
+  '3': {
+    id: 'q3',
+    videoId: '3',
+    questions: [
+      { id: '1', text: '12 çocuktan oluşan bir grup için kaç yetişkin refakatçi gereklidir?', options: ['1', '2', '3', '4'], correctAnswer: 0 },
+      { id: '2', text: 'Görme engelli (BLND) yolcu gruplarında refakatçi oranı nedir?', options: ['10 kişiye 1', '5 kişiye 1', '2 kişiye 1', 'Her yolcuya 1'], correctAnswer: 2 },
+    ]
+  },
+  '4': {
+    id: 'q4',
+    videoId: '4',
+    questions: [
+      { id: '1', text: 'Kabin içi evcil hayvan (PETC) için maksimum ağırlık sınırı nedir?', options: ['5 kg', '8 kg', '10 kg', '12 kg'], correctAnswer: 1 },
+      { id: '2', text: 'Dış hat uçuşlarında hangi canlı hayvanın kabine kabulü yasaktır?', options: ['Kedi', 'Köpek', 'Kuş', 'Hiçbiri'], correctAnswer: 2 },
+    ]
+  },
+  '5': {
+    id: 'q5',
+    videoId: '5',
+    questions: [
+      { id: '1', text: 'NOTOC formu aşağıdakilerden hangisi için doldurulmaz?', options: ['DGR (Tehlikeli Madde)', 'AVI (Canlı Hayvan)', 'PER (Bozulabilir Gıda)', 'DIP (Diplomatik Kargo)'], correctAnswer: 3 },
+      { id: '2', text: 'NOTOC formu kime imzalatılmalıdır?', options: ['İstasyon Müdürü', 'Kaptan Pilot', 'Kabin Amiri', 'Yolcu'], correctAnswer: 1 },
+    ]
+  },
+  '6': {
+    id: 'q6',
+    videoId: '6',
+    questions: [
+      { id: '1', text: 'Silah ve mühimmat uçağın hangi bölümünde taşınır?', options: ['Kabin içi', 'Arka ambar', 'Ön ambar (Forward hold)', 'Kanat altı'], correctAnswer: 2 },
+      { id: '2', text: 'Kişi başı taşınabilecek maksimum mühimmat (1.4S) miktarı nedir?', options: ['2 kg', '5 kg', '8 kg', '10 kg'], correctAnswer: 1 },
+    ]
+  },
+  '7': {
+    id: 'q7',
+    videoId: '7',
+    questions: [
+      { id: '1', text: 'Yurt dışı uçuşlarda check-in işlemleri uçuştan kaç dakika önce kapanır?', options: ['30 dk', '45 dk', '60 dk', '90 dk'], correctAnswer: 2 },
+      { id: '2', text: 'Aşağıdaki yolculardan hangisi Acil Çıkış (Exit) koltuğuna oturabilir?', options: ['Hamile yolcular', '18 yaş altı yolcular', 'PRM (Engelli) yolcular', 'Sağlıklı yetişkin yolcular'], correctAnswer: 3 },
+    ]
+  },
+  '8': {
+    id: 'q8',
+    videoId: '8',
+    questions: [
+      { id: '1', text: 'İnsani yük (HUM) uçağa nasıl kabul edilir?', options: ['Kabin içi koltukta', 'Sadece kargo olarak', 'Yolcu bagajı olarak', 'Kabin dolabında'], correctAnswer: 1 },
+      { id: '2', text: 'Türkiye içindeki uçuşlarda bulaşıcı hastalık kaynaklı HUM taşınabilir mi?', options: ['Evet', 'Hayır', 'Sadece özel izinle', 'Sadece gece uçuşlarında'], correctAnswer: 1 },
     ]
   }
 };

@@ -47,8 +47,9 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
   };
 
   const feedback = [
-    { id: '1', text: lang === 'tr' ? 'Quiz sonucunda %85 başarı sağladınız. Harika gidiyorsunuz!' : 'You achieved 85% success in the quiz. You are doing great!', type: 'success' },
-    { id: '2', text: lang === 'tr' ? 'Bagaj ekleme videosunu tekrar izlemeniz önerilir.' : 'It is recommended to watch the baggage addition video again.', type: 'info' }
+    { id: '1', text: lang === 'tr' ? 'Tebrikler! Ortalama check-in süren geçtiğimiz aya göre %10 iyileşti.' : 'Congratulations! Your average check-in time has improved by 10% compared to last month.', type: 'success' },
+    { id: '2', text: lang === 'tr' ? 'Quiz sonucunda %85 başarı sağladınız. Harika gidiyorsunuz!' : 'You achieved 85% success in the quiz. You are doing great!', type: 'success' },
+    { id: '3', text: lang === 'tr' ? 'Bagaj ekleme videosunu tekrar izlemeniz önerilir.' : 'It is recommended to watch the baggage addition video again.', type: 'info' }
   ];
 
   return (

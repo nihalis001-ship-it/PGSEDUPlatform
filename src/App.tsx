@@ -43,15 +43,15 @@ const INITIAL_REQUESTS: LessonRequest[] = [
 
 type Tab = 'videos' | 'planner' | 'dashboard' | 'request' | 'profile' | 'errors' | 'settings' | 'ai' | 'upcoming' | 'upload' | 'stations' | 'quick' | 'performance';
 
-const VIDEOS: VideoType[] = [
-  { id: '1', title: 'SSR (Özel Hizmet Talebi) Ekleme', instructor: 'Simge Demir', duration: '15:20', thumbnail: 'https://picsum.photos/seed/ssr/800/450', category: 'Check-in', rating: 4.8 },
-  { id: '2', title: 'Bagaj Ekleme ve Etiketleme', instructor: 'Cafer Yılmaz', duration: '12:15', thumbnail: 'https://picsum.photos/seed/baggage/800/450', category: 'Check-in', rating: 4.9 },
-  { id: '3', title: 'Online Check-inli Yolcu Kabulü', instructor: 'Cemile Kaya', duration: '18:10', thumbnail: 'https://picsum.photos/seed/online/800/450', category: 'Boarding', rating: 4.7 },
-  { id: '4', title: 'Boarding Süreçleri ve Kapı Yönetimi', instructor: 'Simge Demir', duration: '25:45', thumbnail: 'https://picsum.photos/seed/boarding/800/450', category: 'Boarding', rating: 4.6 },
-  { id: '5', title: 'APIS Bilgileri ve Pasaport Kontrol', instructor: 'Cafer Yılmaz', duration: '22:30', thumbnail: 'https://picsum.photos/seed/passport/800/450', category: 'Check-in', rating: 5.0 },
-  { id: '6', title: 'Engelli Yolcu (WCHC) Prosedürleri', instructor: 'Cemile Kaya', duration: '20:00', thumbnail: 'https://picsum.photos/seed/disabled/800/450', category: 'Özel Hizmet', rating: 4.8 },
-  { id: '7', title: 'Etkili İletişim ve Beden Dili', instructor: 'Simge Demir', duration: '10:00', thumbnail: 'https://picsum.photos/seed/communication/800/450', category: 'Kişisel Gelişim', rating: 4.5 },
-  { id: '8', title: 'Zaman Yönetimi ve Planlama', instructor: 'Cafer Yılmaz', duration: '08:30', thumbnail: 'https://picsum.photos/seed/time/800/450', category: 'Kişisel Gelişim', rating: 4.4 },
+const INITIAL_VIDEOS: VideoType[] = [
+  { id: '1', title: 'Bagaj Kabul ve Etiketleme Prosedürleri', instructor: 'Simge Demir', duration: '15:20', thumbnail: 'https://picsum.photos/seed/baggage/800/450', category: 'Check-in', rating: 4.8 },
+  { id: '2', title: 'Fazla Bagaj ve Ücretlendirme Kuralları', instructor: 'Cafer Yılmaz', duration: '12:15', thumbnail: 'https://picsum.photos/seed/excess/800/450', category: 'Check-in', rating: 4.9 },
+  { id: '3', title: 'Özel Yolcu ve Refakatçi Limitleri', instructor: 'Cemile Kaya', duration: '18:10', thumbnail: 'https://picsum.photos/seed/special/800/450', category: 'Özel Hizmet', rating: 4.7 },
+  { id: '4', title: 'Canlı Hayvan (PETC/AVIH) Kabulü', instructor: 'Simge Demir', duration: '25:45', thumbnail: 'https://picsum.photos/seed/pets/800/450', category: 'Operasyon', rating: 4.6 },
+  { id: '5', title: 'Tehlikeli Maddeler ve NOTOC Formu', instructor: 'Cafer Yılmaz', duration: '22:30', thumbnail: 'https://picsum.photos/seed/dgr/800/450', category: 'Operasyon', rating: 5.0 },
+  { id: '6', title: 'Silah Taşıma ve Güvenlik Prosedürleri', instructor: 'Cemile Kaya', duration: '20:00', thumbnail: 'https://picsum.photos/seed/weapons/800/450', category: 'Güvenlik', rating: 4.8 },
+  { id: '7', title: 'Check-in Zamanları ve Koltuk Atama', instructor: 'Simge Demir', duration: '10:00', thumbnail: 'https://picsum.photos/seed/seating/800/450', category: 'Check-in', rating: 4.5 },
+  { id: '8', title: 'İnsani Yük (HUM) ve Özel Kargolar', instructor: 'Cafer Yılmaz', duration: '08:30', thumbnail: 'https://picsum.photos/seed/hum/800/450', category: 'Operasyon', rating: 4.4 },
 ];
 
 export default function App() {
@@ -60,6 +60,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [lang, setLang] = useState<Language>('tr');
   const [showNotifications, setShowNotifications] = useState(false);
+  const [videos, setVideos] = useState<VideoType[]>(INITIAL_VIDEOS);
   const [user, setUser] = useState<User>({
     name: 'Nihal Işık',
     email: 'nihalis001@gmail.com',
@@ -280,14 +281,14 @@ export default function App() {
               {activeTab === 'dashboard' && (
                 <Dashboard 
                   user={user} 
-                  videos={VIDEOS} 
+                  videos={videos} 
                   onNavigate={(tab) => setActiveTab(tab as Tab)} 
                   lang={lang}
                 />
               )}
               {activeTab === 'videos' && (
                 <VideoGallery 
-                  videos={VIDEOS} 
+                  videos={videos} 
                   completedLessons={user.completedLessons}
                   onComplete={handleCompleteLesson}
                   lang={lang}
@@ -303,7 +304,7 @@ export default function App() {
                   onUpdateStatus={handleUpdateRequestStatus}
                 />
               )}
-              {activeTab === 'profile' && <UserProfile user={user} videos={VIDEOS} lang={lang} />}
+              {activeTab === 'profile' && <UserProfile user={user} videos={videos} lang={lang} />}
               {activeTab === 'errors' && <ErrorLibrary lang={lang} />}
               {activeTab === 'settings' && <SettingsTab lang={lang} />}
               {activeTab === 'ai' && <AIAssistant lang={lang} />}
@@ -391,10 +392,63 @@ export default function App() {
               )}
               {activeTab === 'upload' && (
                 <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
-                  <h2 className="text-2xl font-serif font-bold text-zinc-900 mb-4">{t.uploadVideo}</h2>
-                  <div className="border-2 border-dashed border-zinc-200 rounded-2xl p-12 flex flex-col items-center justify-center text-zinc-400">
-                    <Upload className="w-12 h-12 mb-4" />
-                    <p className="font-medium">Video dosyasını buraya sürükleyin veya seçin</p>
+                  <h2 className="text-2xl font-serif font-bold text-zinc-900 mb-6">{t.uploadVideo}</h2>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Video Başlığı</label>
+                        <input 
+                          id="upload-title"
+                          type="text" 
+                          placeholder="Örn: Yeni Bagaj Kuralları"
+                          className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Kategori</label>
+                        <select 
+                          id="upload-category"
+                          className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                        >
+                          <option value="Check-in">Check-in</option>
+                          <option value="Operasyon">Operasyon</option>
+                          <option value="Güvenlik">Güvenlik</option>
+                          <option value="Özel Hizmet">Özel Hizmet</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="border-2 border-dashed border-zinc-200 rounded-2xl p-12 flex flex-col items-center justify-center text-zinc-400 hover:border-orange-300 hover:bg-orange-50/30 transition-all cursor-pointer relative">
+                      <input 
+                        type="file" 
+                        accept="video/*"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const title = (document.getElementById('upload-title') as HTMLInputElement).value || file.name;
+                            const category = (document.getElementById('upload-category') as HTMLSelectElement).value;
+                            
+                            const newVideo: VideoType = {
+                              id: Math.random().toString(36).substr(2, 9),
+                              title: title,
+                              instructor: user.name,
+                              duration: '00:00', // In a real app, we'd calculate this
+                              thumbnail: `https://picsum.photos/seed/${Math.random()}/800/450`,
+                              category: category,
+                              rating: 5.0
+                            };
+                            
+                            setVideos(prev => [newVideo, ...prev]);
+                            alert('Video başarıyla yüklendi ve yayına alındı!');
+                            setActiveTab('upcoming');
+                          }
+                        }}
+                      />
+                      <Upload className="w-12 h-12 mb-4 text-orange-500" />
+                      <p className="font-bold text-zinc-900">Video dosyasını buraya sürükleyin veya seçin</p>
+                      <p className="text-xs mt-2">MP4, MOV veya AVI (Maks. 500MB)</p>
+                    </div>
                   </div>
                 </div>
               )}
