@@ -8,6 +8,8 @@ import { Settings as SettingsTab } from './components/Settings';
 import { NotificationCenter } from './components/NotificationCenter';
 import { Dashboard } from './components/Dashboard';
 import { AIAssistant } from './components/AIAssistant';
+import { QuickReference } from './components/QuickReference';
+import { CheckInPerformance } from './components/CheckInPerformance';
 import { Login } from './components/Login';
 import { MandatoryNotification } from './components/MandatoryNotification';
 import { 
@@ -20,11 +22,13 @@ import {
   LogOut,
   GraduationCap,
   PlusCircle,
+  Briefcase,
   User as UserIcon,
   AlertTriangle,
   Globe,
   Clock,
   Upload,
+  TrendingUp,
   MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -37,7 +41,7 @@ const INITIAL_REQUESTS: LessonRequest[] = [
   { id: '2', title: 'DCS Hata Çözümleri', instructorId: '2', studentName: 'Nihal Işık', dates: ['2026-03-15'], status: 'pending' }
 ];
 
-type Tab = 'videos' | 'planner' | 'dashboard' | 'request' | 'profile' | 'errors' | 'settings' | 'ai' | 'upcoming' | 'upload' | 'stations';
+type Tab = 'videos' | 'planner' | 'dashboard' | 'request' | 'profile' | 'errors' | 'settings' | 'ai' | 'upcoming' | 'upload' | 'stations' | 'quick' | 'performance';
 
 const VIDEOS: VideoType[] = [
   { id: '1', title: 'SSR (Özel Hizmet Talebi) Ekleme', instructor: 'Simge Demir', duration: '15:20', thumbnail: 'https://picsum.photos/seed/ssr/800/450', category: 'Check-in', rating: 4.8 },
@@ -107,6 +111,7 @@ export default function App() {
   const navItems = user.role === 'Öğrenci' ? [
     { id: 'dashboard', label: t.dashboard, icon: LayoutDashboard },
     { id: 'videos', label: t.videos, icon: Video },
+    { id: 'quick', label: t.quickReference, icon: Briefcase },
     { id: 'planner', label: t.planner, icon: Calendar },
     { id: 'request', label: 'Randevu Talebi', icon: Clock },
     { id: 'errors', label: t.errorLibrary, icon: AlertTriangle },
@@ -115,6 +120,7 @@ export default function App() {
     { id: 'settings', label: t.settings, icon: Settings },
   ] : [
     { id: 'upcoming', label: t.upcomingLessons, icon: Calendar },
+    { id: 'performance', label: t.checkInPerformance, icon: TrendingUp },
     { id: 'upload', label: t.uploadVideo, icon: Upload },
     { id: 'stations', label: t.assignedStations, icon: MapPin },
     { id: 'profile', label: t.profile, icon: UserIcon },
@@ -301,6 +307,8 @@ export default function App() {
               {activeTab === 'errors' && <ErrorLibrary lang={lang} />}
               {activeTab === 'settings' && <SettingsTab lang={lang} />}
               {activeTab === 'ai' && <AIAssistant lang={lang} />}
+              {activeTab === 'quick' && <QuickReference lang={lang} />}
+              {activeTab === 'performance' && <CheckInPerformance lang={lang} />}
               {activeTab === 'upcoming' && (
                 <div className="space-y-8">
                   <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">

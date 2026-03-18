@@ -13,7 +13,11 @@ interface UserProfileProps {
 
 export const UserProfile = ({ user, videos, lang }: UserProfileProps) => {
   const t = translations[lang];
+  const isInstructor = user.role === 'Eğitmen';
   const progress = Math.round((user.completedLessons.length / videos.length) * 100);
+
+  const instructorVideos = videos.filter(v => v.instructor === user.name);
+  const displayVideos = isInstructor ? instructorVideos : videos;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -36,7 +40,7 @@ export const UserProfile = ({ user, videos, lang }: UserProfileProps) => {
             </div>
             <div className="flex items-center gap-2 text-zinc-500 text-sm">
               <Shield className="w-4 h-4" />
-              {lang === 'tr' ? (user.role === 'student' ? 'Öğrenci' : 'Eğitmen') : (user.role === 'student' ? 'Student' : 'Instructor')}
+              {user.role}
             </div>
           </div>
           <div className="pt-4 flex gap-3 justify-center md:justify-start">
@@ -49,33 +53,37 @@ export const UserProfile = ({ user, videos, lang }: UserProfileProps) => {
           </div>
         </div>
 
-        <div className="w-full md:w-64 bg-zinc-50 rounded-2xl p-6 border border-zinc-100 space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{t.progress}</span>
-            <span className="text-lg font-serif font-bold text-orange-600">%{progress}</span>
+        {!isInstructor && (
+          <div className="w-full md:w-64 bg-zinc-50 rounded-2xl p-6 border border-zinc-100 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{t.progress}</span>
+              <span className="text-lg font-serif font-bold text-orange-600">%{progress}</span>
+            </div>
+            <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                className="h-full bg-orange-600"
+              />
+            </div>
+            <p className="text-[10px] text-zinc-500 text-center">
+              {user.completedLessons.length} / {videos.length} {lang === 'tr' ? 'ders tamamlandı' : 'lessons completed'}
+            </p>
           </div>
-          <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              className="h-full bg-orange-600"
-            />
-          </div>
-          <p className="text-[10px] text-zinc-500 text-center">
-            {user.completedLessons.length} / {videos.length} {lang === 'tr' ? 'ders tamamlandı' : 'lessons completed'}
-          </p>
-        </div>
+        )}
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
+        <div className={cn("space-y-6", isInstructor ? "lg:col-span-3" : "lg:col-span-2")}>
           <h3 className="text-xl font-serif font-bold text-zinc-900 flex items-center gap-3">
             <BookOpen className="w-6 h-6 text-orange-600" />
-            {lang === 'tr' ? 'Kayıtlı Kurslarım' : 'My Enrolled Courses'}
+            {isInstructor 
+              ? (lang === 'tr' ? 'Son Yüklediğim Videolar' : 'My Recently Uploaded Videos')
+              : (lang === 'tr' ? 'Kayıtlı Kurslarım' : 'My Enrolled Courses')}
           </h3>
           
-          <div className="grid grid-cols-1 gap-4">
-            {videos.map((video) => {
+          <div className={cn("grid gap-4", isInstructor ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1")}>
+            {displayVideos.map((video) => {
               const isCompleted = user.completedLessons.includes(video.id);
               return (
                 <div key={video.id} className="bg-white p-4 rounded-2xl border border-zinc-200 shadow-sm flex items-center gap-4 group hover:border-orange-200 transition-all">
@@ -84,65 +92,60 @@ export const UserProfile = ({ user, videos, lang }: UserProfileProps) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-bold text-zinc-900 truncate group-hover:text-orange-600 transition-colors">
-                      {lang === 'tr' ? video.title : (
-                        video.id === '1' ? 'Baggage Acceptance Procedures' :
-                        video.id === '2' ? 'Dangerous Goods (DGR) Awareness' :
-                        video.id === '3' ? 'Advanced DCS Check-in' :
-                        video.id === '4' ? 'Passenger Boarding Rules' :
-                        video.id === '5' ? 'Special Passenger Services' :
-                        video.id === '6' ? 'Emergency Procedures' :
-                        video.id === '7' ? 'Flight Irregularity Management' :
-                        'Security Awareness'
-                      )}
+                      {video.title}
                     </h4>
                     <p className="text-xs text-zinc-500">{video.instructor}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {isCompleted ? (
-                      <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
-                        <CheckCircle2 className="w-3 h-3" />
-                        {t.completed}
-                      </div>
-                    ) : (
-                      <div className="text-[10px] font-bold text-zinc-400 uppercase">
-                        {lang === 'tr' ? 'Devam Ediyor' : 'In Progress'}
-                      </div>
-                    )}
-                    <button className="p-2 hover:bg-zinc-50 rounded-lg text-zinc-400">
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {!isInstructor && (
+                    <div className="flex items-center gap-3">
+                      {isCompleted ? (
+                        <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {t.completed}
+                        </div>
+                      ) : (
+                        <div className="text-[10px] font-bold text-zinc-400 uppercase">
+                          {lang === 'tr' ? 'Devam Ediyor' : 'In Progress'}
+                        </div>
+                      )}
+                      <button className="p-2 hover:bg-zinc-50 rounded-lg text-zinc-400">
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
 
-        <div className="space-y-6">
-          <h3 className="text-xl font-serif font-bold text-zinc-900 flex items-center gap-3">
-            <Trophy className="w-6 h-6 text-amber-500" />
-            {lang === 'tr' ? 'Başarımlar' : 'Achievements'}
-          </h3>
-          
-          <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
-            {[
-              { id: '1', title: lang === 'tr' ? 'Hızlı Başlangıç' : 'Fast Start', desc: lang === 'tr' ? 'İlk dersini tamamladın' : 'Completed your first lesson', icon: '🚀', active: true },
-              { id: '2', title: lang === 'tr' ? 'Bilgi Küpü' : 'Knowledge Cube', desc: lang === 'tr' ? '5 testi başarıyla geçtin' : 'Passed 5 quizzes successfully', icon: '🧠', active: user.completedLessons.length >= 5 },
-              { id: '3', title: lang === 'tr' ? 'Sadık Öğrenci' : 'Loyal Student', desc: lang === 'tr' ? '7 gün üst üste giriş yaptın' : 'Logged in for 7 consecutive days', icon: '🔥', active: false },
-            ].map(badge => (
-              <div key={badge.id} className={cn(
-                "flex items-center gap-4 p-3 rounded-2xl border transition-all",
-                badge.active ? "bg-zinc-50 border-zinc-100" : "opacity-40 grayscale border-transparent"
-              )}>
-                <div className="text-2xl">{badge.icon}</div>
-                <div>
-                  <p className="text-xs font-bold text-zinc-900">{badge.title}</p>
-                  <p className="text-[10px] text-zinc-500">{badge.desc}</p>
+        {!isInstructor && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-serif font-bold text-zinc-900 flex items-center gap-3">
+              <Trophy className="w-6 h-6 text-amber-500" />
+              {lang === 'tr' ? 'Başarımlar' : 'Achievements'}
+            </h3>
+            
+            <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
+              {[
+                { id: '1', title: lang === 'tr' ? 'Hızlı Başlangıç' : 'Fast Start', desc: lang === 'tr' ? 'İlk dersini tamamladın' : 'Completed your first lesson', icon: '🚀', active: true },
+                { id: '2', title: lang === 'tr' ? 'Bilgi Küpü' : 'Knowledge Cube', desc: lang === 'tr' ? '5 testi başarıyla geçtin' : 'Passed 5 quizzes successfully', icon: '🧠', active: user.completedLessons.length >= 5 },
+                { id: '3', title: lang === 'tr' ? 'Sadık Öğrenci' : 'Loyal Student', desc: lang === 'tr' ? '7 gün üst üste giriş yaptın' : 'Logged in for 7 consecutive days', icon: '🔥', active: false },
+              ].map(badge => (
+                <div key={badge.id} className={cn(
+                  "flex items-center gap-4 p-3 rounded-2xl border transition-all",
+                  badge.active ? "bg-zinc-50 border-zinc-100" : "opacity-40 grayscale border-transparent"
+                )}>
+                  <div className="text-2xl">{badge.icon}</div>
+                  <div>
+                    <p className="text-xs font-bold text-zinc-900">{badge.title}</p>
+                    <p className="text-[10px] text-zinc-500">{badge.desc}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
