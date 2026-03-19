@@ -76,16 +76,16 @@ export function AIAssistant({ lang }: AIAssistantProps) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-12rem)] bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-zinc-100 bg-zinc-50/50 flex items-center justify-between">
+      <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
+          <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200 dark:shadow-none">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-zinc-900">{lang === 'tr' ? 'Pegasus AI Asistan' : 'Pegasus AI Assistant'}</h2>
-            <p className="text-xs text-zinc-500 font-medium flex items-center gap-1.5">
+            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">{lang === 'tr' ? 'Pegasus AI Asistan' : 'Pegasus AI Assistant'}</h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {lang === 'tr' ? 'Çevrimiçi • Prosedür Uzmanı' : 'Online • Procedure Expert'}
             </p>
@@ -93,7 +93,7 @@ export function AIAssistant({ lang }: AIAssistantProps) {
         </div>
         <button 
           onClick={() => setMessages([messages[0]])}
-          className="p-2 text-zinc-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+          className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-orange-600 dark:hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all"
           title={lang === 'tr' ? "Sohbeti Sıfırla" : "Reset Chat"}
         >
           <RefreshCw className="w-4 h-4" />
@@ -103,7 +103,7 @@ export function AIAssistant({ lang }: AIAssistantProps) {
       {/* Messages */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth"
+        className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth bg-zinc-50/30 dark:bg-zinc-950/30"
       >
         <AnimatePresence initial={false}>
           {messages.map((msg, idx) => (
@@ -118,17 +118,19 @@ export function AIAssistant({ lang }: AIAssistantProps) {
             >
               <div className={cn(
                 "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm",
-                msg.role === 'assistant' ? "bg-orange-100 text-orange-600" : "bg-zinc-100 text-zinc-600"
+                msg.role === 'assistant' 
+                  ? "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400" 
+                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
               )}>
                 {msg.role === 'assistant' ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
               </div>
               <div className={cn(
                 "p-4 rounded-2xl text-sm leading-relaxed",
                 msg.role === 'assistant' 
-                  ? "bg-zinc-50 text-zinc-800 border border-zinc-100" 
-                  : "bg-orange-600 text-white shadow-md shadow-orange-100"
+                  ? "bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-700 shadow-sm" 
+                  : "bg-orange-600 text-white shadow-md shadow-orange-100 dark:shadow-none"
               )}>
-                <div className="markdown-body prose prose-sm max-w-none">
+                <div className="markdown-body prose prose-sm dark:prose-invert max-w-none">
                   <Markdown>{msg.content}</Markdown>
                 </div>
               </div>
@@ -141,19 +143,19 @@ export function AIAssistant({ lang }: AIAssistantProps) {
             animate={{ opacity: 1 }}
             className="flex gap-4"
           >
-            <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
               <Bot className="w-4 h-4" />
             </div>
-            <div className="bg-zinc-50 border border-zinc-100 p-4 rounded-2xl flex items-center gap-2">
+            <div className="bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 p-4 rounded-2xl flex items-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin text-orange-600" />
-              <span className="text-sm text-zinc-500 font-medium">{lang === 'tr' ? 'Pegasus AI düşünüyor...' : 'Pegasus AI is thinking...'}</span>
+              <span className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">{lang === 'tr' ? 'Pegasus AI düşünüyor...' : 'Pegasus AI is thinking...'}</span>
             </div>
           </motion.div>
         )}
       </div>
 
       {/* Input */}
-      <div className="p-6 bg-white border-t border-zinc-100">
+      <div className="p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
         <div className="relative flex items-center gap-3">
           <input
             type="text"
@@ -161,7 +163,7 @@ export function AIAssistant({ lang }: AIAssistantProps) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder={lang === 'tr' ? "Bir soru sorun (örn: SSR ekleme nasıl yapılır?)" : "Ask a question (e.g., How to add SSR?)"}
-            className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all pr-14"
+            className="flex-1 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all pr-14 dark:text-white"
           />
           <button
             onClick={handleSend}
@@ -169,14 +171,14 @@ export function AIAssistant({ lang }: AIAssistantProps) {
             className={cn(
               "absolute right-2 p-2.5 rounded-xl transition-all",
               input.trim() && !isLoading 
-                ? "bg-orange-600 text-white shadow-lg shadow-orange-200 hover:bg-orange-700" 
-                : "bg-zinc-100 text-zinc-400 cursor-not-allowed"
+                ? "bg-orange-600 text-white shadow-lg shadow-orange-200 dark:shadow-none hover:bg-orange-700" 
+                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
             )}
           >
             <Send className="w-5 h-5" />
           </button>
         </div>
-        <p className="mt-3 text-[10px] text-center text-zinc-400 font-medium">
+        <p className="mt-3 text-[10px] text-center text-zinc-400 dark:text-zinc-500 font-medium">
           {lang === 'tr' 
             ? 'Yapay zeka hatalar yapabilir. Önemli prosedürler için her zaman resmi el kitaplarını kontrol edin.' 
             : 'AI can make mistakes. Always check official manuals for important procedures.'}

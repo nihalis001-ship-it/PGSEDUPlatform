@@ -100,9 +100,9 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 border border-zinc-200 rounded-2xl shadow-xl">
-          <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">{label}</p>
-          <p className="text-sm font-bold text-orange-600">{formatTime(payload[0].value)}</p>
+        <div className="bg-white dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl">
+          <p className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
+          <p className="text-sm font-bold text-orange-600 dark:text-orange-400">{formatTime(payload[0].value)}</p>
         </div>
       );
     }
@@ -116,16 +116,16 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
           {selectedFlight && (
             <button 
               onClick={() => setSelectedFlight(null)}
-              className="p-2 hover:bg-zinc-100 rounded-xl transition-colors text-zinc-500"
+              className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors text-zinc-500 dark:text-zinc-400"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
           )}
           <div>
-            <h2 className="text-3xl font-serif font-bold text-zinc-900">
+            <h2 className="text-3xl font-serif font-bold text-zinc-900 dark:text-white">
               {selectedFlight ? `${selectedFlight.flightNumber} ${selectedFlight.route}` : t.checkInPerformance}
             </h2>
-            <p className="text-zinc-500 mt-1">
+            <p className="text-zinc-500 dark:text-zinc-400 mt-1">
               {selectedFlight ? t.userBased : t.performanceAnalytics}
             </p>
           </div>
@@ -133,13 +133,13 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
 
         {!selectedFlight && (
           <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-zinc-500" />
             <input 
               type="text" 
               placeholder={t.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 outline-none"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 outline-none dark:text-white"
             />
           </div>
         )}
@@ -161,37 +161,37 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 onClick={() => setSelectedFlight(flight)}
-                className="group bg-white p-6 rounded-3xl border border-zinc-200 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/20 transition-all cursor-pointer"
+                className="group bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:shadow-orange-100/20 dark:hover:shadow-none transition-all cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-6">
-                  <div className="p-3 bg-orange-50 rounded-2xl text-orange-600">
+                  <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-2xl text-orange-600 dark:text-orange-400">
                     <Plane className="w-6 h-6" />
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{t.flightNumber}</span>
-                    <p className="text-lg font-bold text-zinc-900">{flight.flightNumber}</p>
+                    <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{t.flightNumber}</span>
+                    <p className="text-lg font-bold text-zinc-900 dark:text-white">{flight.flightNumber}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-zinc-500">
+                    <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-xs font-medium">{t.avgCheckInTime}</span>
                     </div>
-                    <span className="text-sm font-bold text-orange-600">{formatTime(flight.avgTime)}</span>
+                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{formatTime(flight.avgTime)}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-zinc-500">
+                    <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
                       <Users className="w-4 h-4" />
                       <span className="text-xs font-medium">Total Pax</span>
                     </div>
-                    <span className="text-sm font-bold text-zinc-900">{flight.totalPassengers}</span>
+                    <span className="text-sm font-bold text-zinc-900 dark:text-white">{flight.totalPassengers}</span>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-zinc-50 flex items-center justify-between group-hover:text-orange-600 transition-colors">
+                <div className="mt-6 pt-6 border-t border-zinc-50 dark:border-zinc-800 flex items-center justify-between group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                   <span className="text-[10px] font-bold uppercase tracking-wider">{t.detailedProcedure}</span>
                   <ChevronRight className="w-4 h-4" />
                 </div>
@@ -206,25 +206,25 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
             exit={{ opacity: 0, y: -20 }}
             className="space-y-8"
           >
-            <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={selectedFlight.staffData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={document.documentElement.classList.contains('dark') ? '#27272a' : '#f4f4f5'} />
                     <XAxis 
                       dataKey="name" 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{ fontSize: 10, fill: '#71717a', fontWeight: 600 }}
+                      tick={{ fontSize: 10, fill: document.documentElement.classList.contains('dark') ? '#a1a1aa' : '#71717a', fontWeight: 600 }}
                       dy={10}
                     />
                     <YAxis 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{ fontSize: 10, fill: '#71717a', fontWeight: 600 }}
+                      tick={{ fontSize: 10, fill: document.documentElement.classList.contains('dark') ? '#a1a1aa' : '#71717a', fontWeight: 600 }}
                       tickFormatter={(val) => `${val}s`}
                     />
-                    <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: document.documentElement.classList.contains('dark') ? '#18181b' : '#f8fafc' }} />
                     <Bar dataKey="avgTime" radius={[8, 8, 0, 0]} barSize={40}>
                       {selectedFlight.staffData.map((entry, index) => (
                         <Cell 
@@ -245,26 +245,26 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-white p-6 rounded-3xl border border-zinc-200 flex items-center justify-between"
+                  className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                       <UserIcon className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-zinc-900">{staff.name}</h4>
-                      <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
+                      <h4 className="font-bold text-zinc-900 dark:text-white">{staff.name}</h4>
+                      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider">
                         {staff.processedCount} Passengers
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">
+                    <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block mb-1">
                       {t.avgTime}
                     </span>
                     <p className={cn(
                       "text-lg font-bold",
-                      staff.avgTime > 150 ? "text-red-600" : "text-orange-600"
+                      staff.avgTime > 150 ? "text-red-600 dark:text-red-400" : "text-orange-600 dark:text-orange-400"
                     )}>
                       {formatTime(staff.avgTime)}
                     </p>

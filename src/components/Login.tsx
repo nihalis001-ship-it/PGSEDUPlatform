@@ -107,12 +107,7 @@ export const Login = ({ onLogin, lang, setLang }: LoginProps) => {
       >
         <div className="flex flex-col items-center mb-10">
           <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-200 mb-6">
-            <img 
-              src="https://www.flypgs.com/assets/images/logo/pegasus-logo.svg" 
-              alt="Pegasus" 
-              className="w-10 h-10 object-contain brightness-0 invert"
-              referrerPolicy="no-referrer"
-            />
+            <span className="text-4xl">✈️</span>
           </div>
           <h1 className="text-3xl font-serif font-bold text-zinc-900">Pegasus Edu</h1>
           <p className="text-zinc-500 mt-2 text-center">

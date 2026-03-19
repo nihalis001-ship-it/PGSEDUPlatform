@@ -50,25 +50,25 @@ export const QuizModal = ({ quiz, onClose, onComplete }: QuizModalProps) => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl"
+        className="bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800"
       >
-        <div className="p-6 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-          <h3 className="font-serif text-xl font-bold text-zinc-900">Bilgi Testi</h3>
-          <button onClick={onClose} className="p-2 hover:bg-zinc-200 rounded-full transition-colors">
-            <X className="w-5 h-5 text-zinc-500" />
+        <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/50">
+          <h3 className="font-serif text-xl font-bold text-zinc-900 dark:text-white">Bilgi Testi</h3>
+          <button onClick={onClose} className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-full transition-colors">
+            <X className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
           </button>
         </div>
 
         <div className="p-8">
           {!showResult ? (
             <div className="space-y-6">
-              <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-zinc-400">
+              <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
                 <span>Soru {currentQuestionIndex + 1} / {quiz.questions.length}</span>
                 <span>Puan: {score}</span>
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-zinc-900 leading-tight">
+                <h4 className="text-lg font-semibold text-zinc-900 dark:text-white leading-tight">
                   {currentQuestion.text}
                 </h4>
 
@@ -81,17 +81,17 @@ export const QuizModal = ({ quiz, onClose, onComplete }: QuizModalProps) => {
                       className={cn(
                         "w-full text-left p-4 rounded-xl border transition-all flex items-center justify-between group",
                         selectedOption === idx 
-                          ? "border-orange-600 bg-orange-50 ring-1 ring-orange-600" 
-                          : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50",
-                        isSubmitted && idx === currentQuestion.correctAnswer && "border-emerald-500 bg-emerald-50 ring-emerald-500",
-                        isSubmitted && selectedOption === idx && idx !== currentQuestion.correctAnswer && "border-red-500 bg-red-50 ring-red-500"
+                          ? "border-orange-600 bg-orange-50 dark:bg-orange-900/20 ring-1 ring-orange-600" 
+                          : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800",
+                        isSubmitted && idx === currentQuestion.correctAnswer && "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 ring-emerald-500",
+                        isSubmitted && selectedOption === idx && idx !== currentQuestion.correctAnswer && "border-red-500 bg-red-50 dark:bg-red-900/20 ring-red-500"
                       )}
                     >
                       <span className={cn(
                         "text-sm font-medium",
-                        selectedOption === idx ? "text-orange-700" : "text-zinc-700",
-                        isSubmitted && idx === currentQuestion.correctAnswer && "text-emerald-700",
-                        isSubmitted && selectedOption === idx && idx !== currentQuestion.correctAnswer && "text-red-700"
+                        selectedOption === idx ? "text-orange-700 dark:text-orange-400" : "text-zinc-700 dark:text-zinc-300",
+                        isSubmitted && idx === currentQuestion.correctAnswer && "text-emerald-700 dark:text-emerald-400",
+                        isSubmitted && selectedOption === idx && idx !== currentQuestion.correctAnswer && "text-red-700 dark:text-red-400"
                       )}>
                         {option}
                       </span>
@@ -133,14 +133,14 @@ export const QuizModal = ({ quiz, onClose, onComplete }: QuizModalProps) => {
                 <CheckCircle2 className="w-10 h-10 text-orange-600" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-serif font-bold text-zinc-900">Test Tamamlandı!</h3>
-                <p className="text-zinc-500">
+                <h3 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white">Test Tamamlandı!</h3>
+                <p className="text-zinc-500 dark:text-zinc-400">
                   {quiz.questions.length} sorudan {score} tanesini doğru cevapladın.
                 </p>
               </div>
               
-              <div className="bg-zinc-50 rounded-2xl p-6 border border-zinc-100">
-                <div className="text-sm font-medium text-zinc-600 mb-1">Başarı Oranı</div>
+              <div className="bg-zinc-50 dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-100 dark:border-zinc-800">
+                <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1">Başarı Oranı</div>
                 <div className="text-4xl font-serif font-bold text-orange-600">
                   %{Math.round((score / quiz.questions.length) * 100)}
                 </div>

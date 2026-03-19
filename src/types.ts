@@ -19,6 +19,8 @@ export interface Video {
   thumbnail: string;
   category: string;
   rating: number;
+  emoji?: string;
+  quiz?: Quiz;
 }
 
 export interface User {
@@ -28,6 +30,11 @@ export interface User {
   avatar: string;
   enrolledCourses: string[]; // IDs of videos/courses
   completedLessons: string[]; // IDs of videos
+  preferences: {
+    theme: 'light' | 'dark';
+    emailNotifications: boolean;
+  };
+  loginStreak: number;
 }
 
 export interface LessonRequest {

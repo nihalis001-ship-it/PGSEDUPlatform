@@ -25,6 +25,7 @@ interface ReferenceItem {
   details?: string[];
   icon: any;
   color: string;
+  image?: string;
 }
 
 export const QuickReference = ({ lang }: { lang: Language }) => {
@@ -53,7 +54,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Kiosk and Mobile check-in close at the same time'
           ],
       icon: Clock,
-      color: 'bg-purple-600'
+      color: 'bg-emerald-700',
+      image: 'https://picsum.photos/seed/checkin/400/300'
     },
     {
       id: 'no-custom-clearance',
@@ -66,7 +68,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
         'ŞIRNAK(NKT), IĞDIR(IGD), ÇANAKKALE(CKZ), ADIYAMAN(ADF)'
       ],
       icon: AlertTriangle,
-      color: 'bg-amber-700'
+      color: 'bg-amber-700',
+      image: 'https://picsum.photos/seed/customs/400/300'
     },
     {
       id: 'seating-rules',
@@ -89,7 +92,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'INAD/Deportee: Rear seats, separate from other passengers'
           ],
       icon: Users,
-      color: 'bg-blue-700'
+      color: 'bg-blue-700',
+      image: 'https://picsum.photos/seed/seating/400/300'
     },
     {
       id: 'through-checkin',
@@ -110,7 +114,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Excess baggage fee calculated separately for each flight'
           ],
       icon: Plane,
-      color: 'bg-indigo-400'
+      color: 'bg-indigo-400',
+      image: 'https://picsum.photos/seed/transit/400/300'
     },
     {
       id: 'boarding-rules',
@@ -133,7 +138,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Oversized cabin bag: Tagged at gate and loaded to hold'
           ],
       icon: Plane,
-      color: 'bg-orange-600'
+      color: 'bg-orange-600',
+      image: 'https://picsum.photos/seed/boarding/400/300'
     },
     {
       id: 'travel-docs-domestic',
@@ -156,7 +162,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'IDs issued by official institutions with photo'
           ],
       icon: FileText,
-      color: 'bg-zinc-700'
+      color: 'bg-zinc-700',
+      image: 'https://picsum.photos/seed/id-card/400/300'
     },
     {
       id: 'travel-docs-intl',
@@ -177,7 +184,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Intl/ECN: Consent letter mandatory for <18 traveling alone'
           ],
       icon: FileText,
-      color: 'bg-zinc-900'
+      color: 'bg-zinc-900',
+      image: 'https://picsum.photos/seed/passport/400/300'
     },
     {
       id: 'important-reminders',
@@ -200,7 +208,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Jump Seat: For operating crew or authorized personnel only'
           ],
       icon: AlertTriangle,
-      color: 'bg-red-600'
+      color: 'bg-red-600',
+      image: 'https://picsum.photos/seed/warning/400/300'
     },
     {
       id: 'companion-limits',
@@ -223,7 +232,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Escorts must be seated with the passengers they escort'
           ],
       icon: Users,
-      color: 'bg-indigo-600'
+      color: 'bg-indigo-600',
+      image: 'https://picsum.photos/seed/group/400/300'
     },
     {
       id: 'notoc-form',
@@ -242,7 +252,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Must be signed by the Captain before operation'
           ],
       icon: FileText,
-      color: 'bg-zinc-800'
+      color: 'bg-zinc-800',
+      image: 'https://picsum.photos/seed/form/400/300'
     },
     {
       id: 'stroller-rules',
@@ -263,7 +274,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Mini stroller (max 75x50x45cm) free, not allowed in cabin'
           ],
       icon: Briefcase,
-      color: 'bg-emerald-400'
+      color: 'bg-emerald-400',
+      image: 'https://picsum.photos/seed/stroller/400/300'
     },
     {
       id: 'live-animals-petc',
@@ -284,7 +296,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'No emergency exit or front row, window seat preferred'
           ],
       icon: Users,
-      color: 'bg-amber-600'
+      color: 'bg-amber-600',
+      image: 'https://picsum.photos/seed/pet/400/300'
     },
     {
       id: 'live-animals-avih',
@@ -305,7 +318,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Cannot be loaded with HUM, PER or dry ice'
           ],
       icon: Users,
-      color: 'bg-amber-800'
+      color: 'bg-amber-800',
+      image: 'https://picsum.photos/seed/animal/400/300'
     },
     {
       id: 'special-loads-hum',
@@ -326,7 +340,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Carriage of cremated remains/ashes is prohibited'
           ],
       icon: Info,
-      color: 'bg-slate-600'
+      color: 'bg-slate-600',
+      image: 'https://picsum.photos/seed/cargo/400/300'
     },
     {
       id: 'weapon-carriage',
@@ -347,7 +362,8 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             'Sporting weapons SPEQ, personal weapons WPAY SSR (fee)'
           ],
       icon: AlertTriangle,
-      color: 'bg-red-900'
+      color: 'bg-red-900',
+      image: 'https://picsum.photos/seed/security/400/300'
     },
     {
       id: 'poc-carriage',
@@ -717,29 +733,29 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
-            className="group bg-white rounded-3xl border border-zinc-200 p-6 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/20 transition-all"
+            className="group bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-6 hover:border-orange-200 dark:hover:border-orange-500/30 hover:shadow-xl hover:shadow-orange-100/20 dark:shadow-none transition-all"
           >
             <div className="flex items-start justify-between mb-4">
               <div className={cn("p-3 rounded-2xl text-white shadow-lg", item.color)}>
                 <item.icon className="w-6 h-6" />
               </div>
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-50 px-2 py-1 rounded-lg">
+              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest bg-zinc-50 dark:bg-zinc-800 px-2 py-1 rounded-lg">
                 {item.category}
               </span>
             </div>
             
             <div className="space-y-2">
-              <h4 className="text-xl font-serif font-bold text-zinc-900 group-hover:text-orange-600 transition-colors">
+              <h4 className="text-xl font-serif font-bold text-zinc-900 dark:text-white group-hover:text-orange-600 transition-colors">
                 {item.title}
               </h4>
-              <p className="text-sm text-zinc-600 font-medium">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium">
                 {item.content}
               </p>
               
               {item.details && (
-                <ul className="pt-4 space-y-2 border-t border-zinc-50">
+                <ul className="pt-4 space-y-2 border-t border-zinc-50 dark:border-zinc-800">
                   {item.details.map((detail, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[11px] text-zinc-500 leading-relaxed">
+                    <li key={i} className="flex items-start gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
                       <div className="w-1 h-1 rounded-full bg-orange-400 mt-1.5 shrink-0" />
                       {detail}
                     </li>
@@ -750,10 +766,10 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
 
             <button 
               onClick={() => setSelectedItem(item)}
-              className="mt-6 w-full flex items-center justify-between p-3 bg-zinc-50 rounded-2xl group/btn hover:bg-orange-50 transition-all"
+              className="mt-6 w-full flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800 rounded-2xl group/btn hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all"
             >
-              <span className="text-[10px] font-bold text-zinc-500 group-hover/btn:text-orange-600 uppercase tracking-wider">{t.detailedProcedure}</span>
-              <ChevronRight className="w-4 h-4 text-zinc-300 group-hover/btn:text-orange-400 transition-all" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 group-hover/btn:text-orange-600 uppercase tracking-wider">{t.detailedProcedure}</span>
+              <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover/btn:text-orange-400 transition-all" />
             </button>
           </motion.div>
         ))}
@@ -773,7 +789,7 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+              className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl overflow-hidden"
             >
               <div className={cn("h-32 flex items-center px-10 relative", selectedItem.color)}>
                 <div className="absolute top-6 right-6">
@@ -801,11 +817,11 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
 
               <div className="p-10 space-y-8">
                 <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                  <h4 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                     <Info className="w-4 h-4 text-orange-600" />
                     {t.generalInfo}
                   </h4>
-                  <p className="text-zinc-600 leading-relaxed">
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     {selectedItem.content} {lang === 'tr' 
                       ? 'Bu prosedür, Pegasus Yer Hizmetleri standartlarına göre belirlenmiştir. Hatalı uygulama durumunda operasyonel gecikmeler ve güvenlik riskleri oluşabilir.'
                       : 'This procedure has been determined according to Pegasus Ground Services standards. Operational delays and security risks may occur in case of incorrect application.'}
@@ -813,34 +829,34 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                  <h4 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                     <FileText className="w-4 h-4 text-orange-600" />
                     {t.applicationSteps}
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {selectedItem.details?.map((detail, i) => (
-                      <div key={i} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex gap-3">
-                        <div className="w-6 h-6 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-[10px] font-bold text-orange-600 shrink-0">
+                      <div key={i} className="p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-700 flex gap-3">
+                        <div className="w-6 h-6 rounded-full bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 flex items-center justify-center text-[10px] font-bold text-orange-600 shrink-0">
                           {i + 1}
                         </div>
-                        <p className="text-xs text-zinc-600 leading-relaxed">{detail}</p>
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{detail}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-zinc-100 flex items-center justify-between">
+                <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex -space-x-2">
                       {[1, 2, 3].map(i => (
-                        <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 flex items-center justify-center text-[10px] font-bold text-zinc-500">
+                        <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-[10px] font-bold text-zinc-500 dark:text-zinc-400">
                           {String.fromCharCode(64 + i)}
                         </div>
                       ))}
                     </div>
-                    <p className="text-[10px] text-zinc-400 font-medium">{t.approvedByInstructors.replace('{count}', '12')}</p>
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">{t.approvedByInstructors.replace('{count}', '12')}</p>
                   </div>
-                  <button className="flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-2xl text-xs font-bold hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-200">
+                  <button className="flex items-center gap-2 px-6 py-3 bg-zinc-900 dark:bg-orange-600 text-white rounded-2xl text-xs font-bold hover:bg-zinc-800 dark:hover:bg-orange-700 transition-all shadow-lg shadow-zinc-200 dark:shadow-orange-900/20">
                     <ExternalLink className="w-4 h-4" />
                     {t.openFullDoc}
                   </button>

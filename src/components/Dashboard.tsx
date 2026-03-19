@@ -54,9 +54,20 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
 
   return (
     <div className="space-y-8">
-      <header>
-        <h2 className="text-3xl font-serif font-bold text-zinc-900">{t.welcome}, {user.name.split(' ')[0]}!</h2>
-        <p className="text-zinc-500 mt-1">{t.todayJourney}</p>
+      <header className="relative h-64 rounded-3xl overflow-hidden group bg-gradient-to-br from-orange-500 to-orange-700">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20 group-hover:scale-110 transition-transform duration-700">
+          <span className="text-[120px]">✈️</span>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-4xl font-serif font-bold text-white">{t.welcome}, {user.name.split(' ')[0]}!</h2>
+            <p className="text-white/80 mt-2 text-lg font-light tracking-wide">{t.todayJourney}</p>
+          </motion.div>
+        </div>
       </header>
 
       {/* Quick Access */}
@@ -65,12 +76,12 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
           <button
             key={action.id}
             onClick={() => onNavigate(action.id)}
-            className="group p-4 bg-white rounded-2xl border border-zinc-200 shadow-sm hover:shadow-md hover:border-orange-200 transition-all text-left flex items-center gap-4"
+            className="group p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-500/50 transition-all text-left flex items-center gap-4"
           >
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 transition-transform group-hover:scale-110", action.color)}>
               <action.icon className="w-5 h-5" />
             </div>
-            <span className="text-sm font-bold text-zinc-700 group-hover:text-orange-600 transition-colors">{action.label}</span>
+            <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 group-hover:text-orange-600 transition-colors">{action.label}</span>
           </button>
         ))}
       </div>
@@ -82,8 +93,8 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
           label={t.completedLessons} 
           value={`${user.completedLessons.length}/${videos.length}`}
           subValue={`%${completionRate} ${t.progress}`}
-          color="text-emerald-600"
-          bgColor="bg-emerald-50"
+          color="text-emerald-600 dark:text-emerald-400"
+          bgColor="bg-emerald-50 dark:bg-emerald-900/20"
           onClick={() => onNavigate('videos')}
         />
         <StatCard 
@@ -91,26 +102,28 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
           label={t.activeTrainings} 
           value="3"
           subValue={t.ongoingModules}
-          color="text-blue-600"
-          bgColor="bg-blue-50"
+          color="text-blue-600 dark:text-blue-400"
+          bgColor="bg-blue-50 dark:bg-blue-900/20"
           onClick={() => onNavigate('videos')}
         />
-        <StatCard 
-          icon={Award} 
-          label={t.certificates} 
-          value="2"
-          subValue={t.earnedCompetencies}
-          color="text-amber-600"
-          bgColor="bg-amber-50"
-          onClick={() => onNavigate('profile')}
-        />
+        {user.role !== 'Eğitmen' && (
+          <StatCard 
+            icon={Award} 
+            label={t.certificates} 
+            value="2"
+            subValue={t.earnedCompetencies}
+            color="text-amber-600 dark:text-amber-400"
+            bgColor="bg-amber-50 dark:bg-amber-900/20"
+            onClick={() => onNavigate('profile')}
+          />
+        )}
         <StatCard 
           icon={TrendingUp} 
           label={t.successScore} 
           value="88"
           subValue={t.generalAverage}
-          color="text-orange-600"
-          bgColor="bg-orange-50"
+          color="text-orange-600 dark:text-orange-400"
+          bgColor="bg-orange-50 dark:bg-orange-900/20"
           onClick={() => onNavigate('profile')}
         />
       </div>
@@ -119,14 +132,14 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
         {/* Left Column */}
         <div className="lg:col-span-8 space-y-8">
           {/* Upcoming Lessons */}
-          <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
-              <h3 className="font-serif text-xl font-bold text-zinc-900">{t.upcomingLessonsTitle}</h3>
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+              <h3 className="font-serif text-xl font-bold text-zinc-900 dark:text-white">{t.upcomingLessonsTitle}</h3>
               <button className="text-sm font-medium text-orange-600 hover:underline">{t.viewAll}</button>
             </div>
-            <div className="divide-y divide-zinc-100">
+            <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {upcomingLessons.map((lesson) => (
-                <div key={lesson.id} className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors">
+                <div key={lesson.id} className="p-6 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className={cn(
                       "w-2 h-12 rounded-full",
@@ -134,17 +147,17 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
                       lesson.type === 'advanced' ? "bg-blue-500" : "bg-emerald-500"
                     )} />
                     <div>
-                      <h4 className="font-semibold text-zinc-900">{lesson.title}</h4>
+                      <h4 className="font-semibold text-zinc-900 dark:text-white">{lesson.title}</h4>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-zinc-500 flex items-center gap-1">
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
                           <Clock className="w-3 h-3" /> {lesson.time}
                         </span>
-                        <span className="text-xs text-zinc-400">•</span>
-                        <span className="text-xs text-zinc-500">{lesson.category}</span>
+                        <span className="text-xs text-zinc-400 dark:text-zinc-600">•</span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">{lesson.category}</span>
                       </div>
                     </div>
                   </div>
-                  <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
                     <ChevronRight className="w-5 h-5 text-zinc-400" />
                   </button>
                 </div>
@@ -153,12 +166,12 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
           </section>
 
           {/* Recent Quiz */}
-          <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
-            <h3 className="font-serif text-xl font-bold text-zinc-900 mb-6">{t.recentQuiz}</h3>
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6">
+            <h3 className="font-serif text-xl font-bold text-zinc-900 dark:text-white mb-6">{t.recentQuiz}</h3>
             <div className="flex items-center gap-6">
               <div className="relative w-24 h-24 flex items-center justify-center">
                 <svg className="w-full h-full -rotate-90">
-                  <circle cx="48" cy="48" r="40" fill="transparent" stroke="#f4f4f5" strokeWidth="8" />
+                  <circle cx="48" cy="48" r="40" fill="transparent" stroke="currentColor" strokeWidth="8" className="text-zinc-100 dark:text-zinc-800" />
                   <circle 
                     cx="48" cy="48" r="40" 
                     fill="transparent" 
@@ -169,12 +182,17 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="absolute text-xl font-bold text-zinc-900">%{recentQuiz.score}</span>
+                <span className="absolute text-xl font-bold text-zinc-900 dark:text-white">%{recentQuiz.score}</span>
               </div>
               <div className="flex-1">
-                <h4 className="font-bold text-zinc-900 text-lg">{recentQuiz.title}</h4>
-                <p className="text-zinc-500 text-sm mt-1">{recentQuiz.date} {lang === 'tr' ? 'tamamlandı' : 'completed'} • {recentQuiz.status}</p>
-                <button className="mt-4 text-sm font-bold text-orange-600 hover:text-orange-700">{t.viewDetails}</button>
+                <h4 className="font-bold text-zinc-900 dark:text-white text-lg">{recentQuiz.title}</h4>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">{recentQuiz.date} {lang === 'tr' ? 'tamamlandı' : 'completed'} • {recentQuiz.status}</p>
+                <button 
+                  onClick={() => onNavigate('videos')}
+                  className="mt-4 text-sm font-bold text-orange-600 hover:text-orange-700"
+                >
+                  {t.viewDetails}
+                </button>
               </div>
             </div>
           </section>
@@ -183,8 +201,8 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
         {/* Right Column */}
         <div className="lg:col-span-4 space-y-8">
           {/* Feedback */}
-          <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
-            <h3 className="font-serif text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6">
+            <h3 className="font-serif text-xl font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-orange-600" />
               {t.feedbacks}
             </h3>
@@ -192,7 +210,9 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
               {feedback.map((item) => (
                 <div key={item.id} className={cn(
                   "p-4 rounded-xl border text-sm leading-relaxed",
-                  item.type === 'success' ? "bg-emerald-50 border-emerald-100 text-emerald-800" : "bg-blue-50 border-blue-100 text-blue-800"
+                  item.type === 'success' 
+                    ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/20 text-emerald-800 dark:text-emerald-400" 
+                    : "bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/20 text-blue-800 dark:text-blue-400"
                 )}>
                   {item.text}
                 </div>
@@ -225,8 +245,8 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
           </section>
 
           {/* Leaderboard */}
-          <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
-            <h3 className="font-serif text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6">
+            <h3 className="font-serif text-xl font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
               <Award className="w-5 h-5 text-amber-500" />
               {t.leaderboard}
             </h3>
@@ -236,17 +256,17 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
                 { name: 'Mehmet Can', score: 945, avatar: 'MC', rank: 2 },
                 { name: 'Selin Kaya', score: 920, avatar: 'SK', rank: 3 },
               ].map((item) => (
-                <div key={item.rank} className="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-50 transition-colors">
+                <div key={item.rank} className="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
                   <span className={cn(
                     "w-6 text-sm font-bold",
-                    item.rank === 1 ? "text-amber-500" : "text-zinc-400"
+                    item.rank === 1 ? "text-amber-500" : "text-zinc-400 dark:text-zinc-600"
                   )}>#{item.rank}</span>
-                  <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-[10px] font-bold text-zinc-600">
+                  <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-600 dark:text-zinc-400">
                     {item.avatar}
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-bold text-zinc-900">{item.name}</p>
-                    <p className="text-[10px] text-zinc-500">{item.score} {t.points}</p>
+                    <p className="text-xs font-bold text-zinc-900 dark:text-white">{item.name}</p>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400">{item.score} {t.points}</p>
                   </div>
                 </div>
               ))}
@@ -257,14 +277,14 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
           </section>
 
           {/* System Status */}
-          <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6">
             <div className="flex items-center gap-2 text-zinc-400 mb-4">
               <AlertCircle className="w-4 h-4" />
               <span className="text-[10px] font-bold uppercase tracking-wider">{t.systemStatus}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-sm font-medium text-zinc-700">{t.allSystemsOperational}</span>
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t.allSystemsOperational}</span>
             </div>
           </section>
         </div>
@@ -286,15 +306,15 @@ interface StatCardProps {
 const StatCard = ({ icon: Icon, label, value, subValue, color, bgColor, onClick }: StatCardProps) => (
   <button 
     onClick={onClick}
-    className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm hover:shadow-md transition-all text-left w-full group hover:border-orange-200"
+    className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all text-left w-full group hover:border-orange-200 dark:hover:border-orange-500/50"
   >
     <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110", bgColor)}>
       <Icon className={cn("w-6 h-6", color)} />
     </div>
     <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{label}</p>
     <div className="flex items-baseline gap-2 mt-1">
-      <h4 className="text-2xl font-serif font-bold text-zinc-900">{value}</h4>
-      <span className="text-[10px] text-zinc-500 font-medium">{subValue}</span>
+      <h4 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white">{value}</h4>
+      <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">{subValue}</span>
     </div>
   </button>
 );
