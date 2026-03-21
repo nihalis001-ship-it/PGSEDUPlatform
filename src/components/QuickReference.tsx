@@ -684,9 +684,11 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
   const categories = ['All', ...Array.from(new Set(referenceData.map(item => item.category)))];
 
   const filteredData = referenceData.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         item.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = item.title.toLowerCase().includes(searchLower) || 
+                         item.content.toLowerCase().includes(searchLower) ||
+                         item.category.toLowerCase().includes(searchLower) ||
+                         (item.details && item.details.some(detail => detail.toLowerCase().includes(searchLower)));
     const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
@@ -700,23 +702,25 @@ export const QuickReference = ({ lang }: { lang: Language }) => {
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-zinc-500" />
             <input 
               type="text" 
               placeholder={t.searchRefPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-zinc-200 rounded-xl text-sm focus:ring-2 focus:ring-orange-500/20 outline-none w-64"
+              className="pl-10 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm focus:ring-2 focus:ring-orange-500/20 outline-none w-64 dark:text-white transition-all"
             />
           </div>
-          <div className="flex bg-white border border-zinc-200 rounded-xl p-1 gap-1">
+          <div className="flex bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 gap-1">
             {categories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
                   "px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
-                  activeCategory === cat ? "bg-orange-600 text-white" : "text-zinc-400 hover:bg-zinc-50"
+                  activeCategory === cat 
+                    ? "bg-orange-600 text-white" 
+                    : "text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                 )}
               >
                 {cat === 'All' ? (lang === 'tr' ? 'Tümü' : 'All') : cat}

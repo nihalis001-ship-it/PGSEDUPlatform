@@ -21,6 +21,7 @@ export interface Video {
   rating: number;
   emoji?: string;
   quiz?: Quiz;
+  videoUrl?: string;
 }
 
 export interface User {
@@ -47,4 +48,13 @@ export interface LessonRequest {
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
   alternativeDate?: string;
+}
+
+export interface AppNotification {
+  id: string;
+  type: 'feature' | 'update';
+  title: { tr: string; en: string };
+  description: { tr: string; en: string };
+  date: string;
+  targetTab?: string;
 }

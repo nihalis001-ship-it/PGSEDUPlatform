@@ -12,17 +12,18 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
-import { Video, User } from '../types';
+import { Video, User, LessonRequest } from '../types';
 import { Language, translations } from '../i18n';
 
 interface DashboardProps {
   user: User;
   videos: Video[];
+  requests: LessonRequest[];
   onNavigate: (tab: string) => void;
   lang: Language;
 }
 
-export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) => {
+export const Dashboard = ({ user, videos, requests, onNavigate, lang }: DashboardProps) => {
   const t = translations[lang];
   const completionRate = Math.round((user.completedLessons.length / videos.length) * 100);
   
@@ -33,18 +34,35 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
     { id: 'errors', label: t.errorLibrary, icon: AlertCircle, color: 'bg-red-500' },
   ];
 
-  const upcomingLessons = [
-    { id: '1', title: lang === 'tr' ? 'Tehlikeli Maddeler (DGR) Eğitimi' : 'Dangerous Goods (DGR) Training', time: lang === 'tr' ? 'Yarın, 10:00' : 'Tomorrow, 10:00', type: 'critical', category: lang === 'tr' ? 'Operasyon' : 'Operation' },
-    { id: '2', title: lang === 'tr' ? 'İleri Seviye DCS Kullanımı' : 'Advanced DCS Usage', time: lang === 'tr' ? '12 Mart, 14:30' : 'March 12, 14:30', type: 'advanced', category: lang === 'tr' ? 'Sistem' : 'System' },
-    { id: '3', title: lang === 'tr' ? 'Müşteri İlişkileri Temelleri' : 'Customer Relations Basics', time: lang === 'tr' ? '15 Mart, 09:00' : 'March 15, 09:00', type: 'basic', category: lang === 'tr' ? 'Service' : 'Service' },
-  ];
+  const upcomingLessons = requests
+    .filter(r => r.status === 'approved' && (user.role === 'Eğitmen' ? true : r.studentName === user.name))
+    .slice(0, 3)
+    .map(r => ({
+      id: r.id,
+      title: r.title,
+      time: `${r.dates[0]} ${r.time || ''}`,
+      type: 'critical',
+      category: 'Eğitim'
+    }));
 
-  const recentQuiz = {
-    title: lang === 'tr' ? 'Bagaj Kabul Süreçleri' : 'Baggage Acceptance Processes',
-    score: 85,
-    date: lang === 'tr' ? '2 saat önce' : '2 hours ago',
-    status: lang === 'tr' ? 'Başarılı' : 'Successful'
-  };
+  const recentQuiz = videos
+    .filter(v => v.quiz && user.completedLessons.includes(v.id))
+    .slice(0, 1)
+    .map(v => ({
+      title: v.title,
+      score: 100, // Mock score for now
+      date: lang === 'tr' ? 'Yeni Tamamlandı' : 'Recently Completed',
+      status: lang === 'tr' ? 'Başarılı' : 'Successful'
+    }))[0] || {
+      title: lang === 'tr' ? 'Henüz Quiz Tamamlanmadı' : 'No Quiz Completed Yet',
+      score: 0,
+      date: '-',
+      status: '-'
+    };
+
+  const latestApprovedRequest = requests
+    .filter(r => r.status === 'approved' && (user.role === 'Eğitmen' ? true : r.studentName === user.name))
+    .sort((a, b) => b.id.localeCompare(a.id))[0];
 
   const feedback = [
     { id: '1', text: lang === 'tr' ? 'Tebrikler! Ortalama check-in süren geçtiğimiz aya göre %10 iyileşti.' : 'Congratulations! Your average check-in time has improved by 10% compared to last month.', type: 'success' },
@@ -138,30 +156,36 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
               <button className="text-sm font-medium text-orange-600 hover:underline">{t.viewAll}</button>
             </div>
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-              {upcomingLessons.map((lesson) => (
-                <div key={lesson.id} className="p-6 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-2 h-12 rounded-full",
-                      lesson.type === 'critical' ? "bg-red-500" : 
-                      lesson.type === 'advanced' ? "bg-blue-500" : "bg-emerald-500"
-                    )} />
-                    <div>
-                      <h4 className="font-semibold text-zinc-900 dark:text-white">{lesson.title}</h4>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> {lesson.time}
-                        </span>
-                        <span className="text-xs text-zinc-400 dark:text-zinc-600">•</span>
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400">{lesson.category}</span>
+              {upcomingLessons.length === 0 ? (
+                <div className="p-12 text-center">
+                  <p className="text-zinc-500 dark:text-zinc-400 text-sm">Henüz onaylanmış bir eğitiminiz bulunmamaktadır.</p>
+                </div>
+              ) : (
+                upcomingLessons.map((lesson) => (
+                  <div key={lesson.id} className="p-6 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className={cn(
+                        "w-2 h-12 rounded-full",
+                        lesson.type === 'critical' ? "bg-red-500" : 
+                        lesson.type === 'advanced' ? "bg-blue-500" : "bg-emerald-500"
+                      )} />
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 dark:text-white">{lesson.title}</h4>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> {lesson.time}
+                          </span>
+                          <span className="text-xs text-zinc-400 dark:text-zinc-600">•</span>
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">{lesson.category}</span>
+                        </div>
                       </div>
                     </div>
+                    <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                      <ChevronRight className="w-5 h-5 text-zinc-400" />
+                    </button>
                   </div>
-                  <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
-                    <ChevronRight className="w-5 h-5 text-zinc-400" />
-                  </button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </section>
 
@@ -226,9 +250,13 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
               <Calendar className="w-4 h-4" />
               <span className="text-[10px] font-bold uppercase tracking-wider">{t.latestPlan}</span>
             </div>
-            <h4 className="text-lg font-bold mb-2">{lang === 'tr' ? 'Haftalık Check-in Uzmanlığı' : 'Weekly Check-in Expertise'}</h4>
+            <h4 className="text-lg font-bold mb-2">
+              {latestApprovedRequest ? latestApprovedRequest.title : (lang === 'tr' ? 'Haftalık Check-in Uzmanlığı' : 'Weekly Check-in Expertise')}
+            </h4>
             <p className="text-zinc-400 text-xs mb-6 leading-relaxed">
-              {lang === 'tr' ? 'Bu hafta SSR işlemleri ve özel yolcu hizmetleri üzerine odaklanacağız.' : 'This week we will focus on SSR processes and special passenger services.'}
+              {latestApprovedRequest 
+                ? (lang === 'tr' ? `${latestApprovedRequest.dates[0]} tarihinde planlanan eğitiminiz onaylandı.` : `Your training scheduled for ${latestApprovedRequest.dates[0]} has been approved.`)
+                : (lang === 'tr' ? 'Bu hafta SSR işlemleri ve özel yolcu hizmetleri üzerine odaklanacağız.' : 'This week we will focus on SSR processes and special passenger services.')}
             </p>
             <div className="flex items-center justify-between">
               <div className="flex -space-x-2">
@@ -238,7 +266,10 @@ export const Dashboard = ({ user, videos, onNavigate, lang }: DashboardProps) =>
                   </div>
                 ))}
               </div>
-              <button className="bg-white text-zinc-900 px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-400 transition-colors">
+              <button 
+                onClick={() => onNavigate('planner')}
+                className="bg-white text-zinc-900 px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-400 transition-colors"
+              >
                 {t.goToPlan}
               </button>
             </div>

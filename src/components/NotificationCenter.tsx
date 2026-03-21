@@ -1,43 +1,16 @@
-import React from 'react';
 import { Bell, Info, Sparkles, ArrowRight, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { Language, translations } from '../i18n';
-
-interface Notification {
-  id: string;
-  type: 'feature' | 'update';
-  title: { tr: string; en: string };
-  description: { tr: string; en: string };
-  date: string;
-  targetTab?: string;
-}
-
-const NOTIFICATIONS: Notification[] = [
-  {
-    id: '1',
-    type: 'feature',
-    title: { tr: 'Çoklu Dil Desteği Eklendi', en: 'Multi-language Support Added' },
-    description: { tr: 'Artık EduPlan\'ı İngilizce ve Türkçe olarak kullanabilirsiniz.', en: 'You can now use EduPlan in English and Turkish.' },
-    date: 'Bugün',
-    targetTab: 'settings'
-  },
-  {
-    id: '2',
-    type: 'update',
-    title: { tr: 'DCS Hata Kütüphanesi', en: 'DCS Error Library' },
-    description: { tr: 'Sık karşılaşılan DCS hata kodları ve çözümleri sisteme eklendi.', en: 'Common DCS error codes and solutions added to the system.' },
-    date: 'Dün',
-    targetTab: 'errors'
-  }
-];
+import { AppNotification } from '../types';
 
 interface NotificationCenterProps {
   lang: Language;
+  notifications: AppNotification[];
   onClose: () => void;
   onNavigate: (tab: any) => void;
 }
 
-export const NotificationCenter = ({ lang, onClose, onNavigate }: NotificationCenterProps) => {
+export const NotificationCenter = ({ lang, notifications, onClose, onNavigate }: NotificationCenterProps) => {
   const t = translations[lang];
 
   return (
@@ -58,9 +31,9 @@ export const NotificationCenter = ({ lang, onClose, onNavigate }: NotificationCe
       </div>
 
       <div className="max-h-[400px] overflow-y-auto">
-        {NOTIFICATIONS.length > 0 ? (
+        {notifications.length > 0 ? (
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-            {NOTIFICATIONS.map((notif) => (
+            {notifications.map((notif) => (
               <div key={notif.id} className="p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
@@ -77,18 +50,18 @@ export const NotificationCenter = ({ lang, onClose, onNavigate }: NotificationCe
                 </div>
                 <h4 className="text-sm font-bold text-zinc-900 dark:text-white">{notif.title[lang]}</h4>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">{notif.description[lang]}</p>
-                <button 
-                  onClick={() => {
-                    if (notif.targetTab) {
+                {notif.targetTab && (
+                  <button 
+                    onClick={() => {
                       onNavigate(notif.targetTab);
                       onClose();
-                    }
-                  }}
-                  className="flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:text-orange-700 transition-colors uppercase tracking-wider"
-                >
-                  {t.viewContent}
-                  <ArrowRight className="w-3 h-3" />
-                </button>
+                    }}
+                    className="flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:text-orange-700 transition-colors uppercase tracking-wider"
+                  >
+                    {t.viewContent}
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                )}
               </div>
             ))}
           </div>

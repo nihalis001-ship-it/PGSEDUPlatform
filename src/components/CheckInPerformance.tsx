@@ -86,10 +86,11 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
   const [selectedFlight, setSelectedFlight] = useState<FlightPerformance | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredFlights = MOCK_DATA.filter(f => 
-    f.flightNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.route.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredFlights = MOCK_DATA.filter(f => {
+    const searchLower = searchTerm.trim().toLowerCase();
+    return f.flightNumber.toLowerCase().includes(searchLower) ||
+           f.route.toLowerCase().includes(searchLower);
+  });
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -136,7 +137,7 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-zinc-500" />
             <input 
               type="text" 
-              placeholder={t.searchPlaceholder}
+              placeholder={lang === 'tr' ? 'Uçuş no veya rota ara...' : 'Search flight no or route...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 outline-none dark:text-white"
@@ -154,49 +155,61 @@ export const CheckInPerformance = ({ lang }: { lang: Language }) => {
             exit={{ opacity: 0, y: -20 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {filteredFlights.map((flight, idx) => (
-              <motion.div
-                key={flight.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                onClick={() => setSelectedFlight(flight)}
-                className="group bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:shadow-orange-100/20 dark:hover:shadow-none transition-all cursor-pointer"
+            {filteredFlights.length > 0 ? (
+              filteredFlights.map((flight, idx) => (
+                <motion.div
+                  key={flight.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  onClick={() => setSelectedFlight(flight)}
+                  className="group bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:shadow-orange-100/20 dark:hover:shadow-none transition-all cursor-pointer"
+                >
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-2xl text-orange-600 dark:text-orange-400">
+                      <Plane className="w-6 h-6" />
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{t.flightNumber}</span>
+                      <p className="text-lg font-bold text-zinc-900 dark:text-white">{flight.flightNumber}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+                        <TrendingUp className="w-4 h-4" />
+                        <span className="text-xs font-medium">{t.avgCheckInTime}</span>
+                      </div>
+                      <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{formatTime(flight.avgTime)}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+                        <Users className="w-4 h-4" />
+                        <span className="text-xs font-medium">Total Pax</span>
+                      </div>
+                      <span className="text-sm font-bold text-zinc-900 dark:text-white">{flight.totalPassengers}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t border-zinc-50 dark:border-zinc-800 flex items-center justify-between group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                    <span className="text-[10px] font-bold uppercase tracking-wider">{t.detailedProcedure}</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="col-span-full py-20 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800"
               >
-                <div className="flex items-start justify-between mb-6">
-                  <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-2xl text-orange-600 dark:text-orange-400">
-                    <Plane className="w-6 h-6" />
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{t.flightNumber}</span>
-                    <p className="text-lg font-bold text-zinc-900 dark:text-white">{flight.flightNumber}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
-                      <TrendingUp className="w-4 h-4" />
-                      <span className="text-xs font-medium">{t.avgCheckInTime}</span>
-                    </div>
-                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{formatTime(flight.avgTime)}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
-                      <Users className="w-4 h-4" />
-                      <span className="text-xs font-medium">Total Pax</span>
-                    </div>
-                    <span className="text-sm font-bold text-zinc-900 dark:text-white">{flight.totalPassengers}</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-6 border-t border-zinc-50 dark:border-zinc-800 flex items-center justify-between group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-                  <span className="text-[10px] font-bold uppercase tracking-wider">{t.detailedProcedure}</span>
-                  <ChevronRight className="w-4 h-4" />
-                </div>
+                <Search className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mx-auto mb-4" />
+                <p className="text-zinc-500 dark:text-zinc-400 font-medium">{t.noResultsFound || 'Sonuç bulunamadı'}</p>
+                <p className="text-zinc-400 dark:text-zinc-500 text-sm mt-1">{t.noResultsDesc || 'Arama kriterlerine uygun uçuş bulunamadı.'}</p>
               </motion.div>
-            ))}
+            )}
           </motion.div>
         ) : (
           <motion.div

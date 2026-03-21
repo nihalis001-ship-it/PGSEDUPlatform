@@ -20,7 +20,7 @@ export const VideoGallery = ({ videos, completedLessons, onComplete, onUpdateThu
   const t = translations[lang];
   const [activeQuiz, setActiveQuiz] = useState<Quiz | null>(null);
   const [showAllUpdates, setShowAllUpdates] = useState(false);
-  const [activeVideo, setActiveVideo] = useState<{ title: string; emoji?: string } | null>(null);
+  const [activeVideo, setActiveVideo] = useState<{ title: string; emoji?: string; url?: string } | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editUrl, setEditUrl] = useState('');
 
@@ -206,7 +206,7 @@ export const VideoGallery = ({ videos, completedLessons, onComplete, onUpdateThu
                 )}
 
                 <div 
-                  onClick={() => setActiveVideo({ title: video.title, emoji: video.emoji })}
+                  onClick={() => setActiveVideo({ title: video.title, emoji: video.emoji, url: video.videoUrl })}
                   className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer"
                 >
                   <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-lg">

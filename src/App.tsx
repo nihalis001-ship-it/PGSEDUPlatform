@@ -10,6 +10,7 @@ import { Dashboard } from './components/Dashboard';
 import { AIAssistant } from './components/AIAssistant';
 import { QuickReference } from './components/QuickReference';
 import { CheckInPerformance } from './components/CheckInPerformance';
+import { InstructorPanel } from './components/InstructorPanel';
 import { Login } from './components/Login';
 import { MandatoryNotification } from './components/MandatoryNotification';
 import { 
@@ -33,7 +34,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
-import { User, Video as VideoType, LessonRequest } from './types';
+import { User, Video as VideoType, LessonRequest, AppNotification, Quiz } from './types';
 import { Language, translations } from './i18n';
 
 const INITIAL_REQUESTS: LessonRequest[] = [
@@ -41,7 +42,26 @@ const INITIAL_REQUESTS: LessonRequest[] = [
   { id: '2', title: 'DCS Hata Çözümleri', instructorId: '2', studentName: 'Nihal Işık', dates: ['2026-03-15'], status: 'pending' }
 ];
 
-type Tab = 'videos' | 'planner' | 'dashboard' | 'request' | 'profile' | 'errors' | 'settings' | 'ai' | 'upcoming' | 'upload' | 'quick' | 'performance';
+const INITIAL_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: '1',
+    type: 'feature',
+    title: { tr: 'Çoklu Dil Desteği Eklendi', en: 'Multi-language Support Added' },
+    description: { tr: 'Artık EduPlan\'ı İngilizce ve Türkçe olarak kullanabilirsiniz.', en: 'You can now use EduPlan in English and Turkish.' },
+    date: 'Bugün',
+    targetTab: 'settings'
+  },
+  {
+    id: '2',
+    type: 'update',
+    title: { tr: 'DCS Hata Kütüphanesi', en: 'DCS Error Library' },
+    description: { tr: 'Sık karşılaşılan DCS hata kodları ve çözümleri sisteme eklendi.', en: 'Common DCS error codes and solutions added to the system.' },
+    date: 'Dün',
+    targetTab: 'errors'
+  }
+];
+
+type Tab = 'videos' | 'planner' | 'dashboard' | 'request' | 'profile' | 'errors' | 'settings' | 'ai' | 'upcoming' | 'management' | 'quick' | 'performance';
 
 const INITIAL_VIDEOS: VideoType[] = [
   { 
@@ -205,6 +225,7 @@ export default function App() {
   const [lang, setLang] = useState<Language>('tr');
   const [showNotifications, setShowNotifications] = useState(false);
   const [videos, setVideos] = useState<VideoType[]>(INITIAL_VIDEOS);
+  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
   const [user, setUser] = useState<User>({
     name: 'Nihal Işık',
     email: 'nihalis001@gmail.com',
@@ -287,6 +308,26 @@ export default function App() {
     setRequests(prev => [...prev, newRequest]);
   };
 
+  const handleAddVideo = (newVideo: VideoType) => {
+    setVideos(prev => [newVideo, ...prev]);
+  };
+
+  const handleDeleteVideo = (id: string) => {
+    setVideos(prev => prev.filter(v => v.id !== id));
+  };
+
+  const handleAddNotification = (newNotif: AppNotification) => {
+    setNotifications(prev => [newNotif, ...prev]);
+  };
+
+  const handleDeleteNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const handleAddQuiz = (videoId: string, quiz: Quiz) => {
+    setVideos(prev => prev.map(v => v.id === videoId ? { ...v, quiz } : v));
+  };
+
   const handleUpdateRequestStatus = (id: string, status: 'approved' | 'rejected', rejectionReason?: string, alternativeDate?: string) => {
     setRequests(prev => prev.map(req => req.id === id ? { ...req, status, rejectionReason, alternativeDate } : req));
   };
@@ -304,7 +345,7 @@ export default function App() {
   ] : [
     { id: 'upcoming', label: t.upcomingLessons, icon: Calendar },
     { id: 'performance', label: t.checkInPerformance, icon: TrendingUp },
-    { id: 'upload', label: t.uploadVideo, icon: Upload },
+    { id: 'management', label: 'Yönetim Paneli', icon: Settings },
     { id: 'profile', label: t.profile, icon: UserIcon },
     { id: 'settings', label: t.settings, icon: Settings },
   ];
@@ -430,6 +471,7 @@ export default function App() {
               {showNotifications && (
                 <NotificationCenter 
                   lang={lang} 
+                  notifications={notifications}
                   onClose={() => setShowNotifications(false)} 
                   onNavigate={(tab) => setActiveTab(tab)}
                 />
@@ -459,6 +501,7 @@ export default function App() {
                 <Dashboard 
                   user={user} 
                   videos={videos} 
+                  requests={requests}
                   onNavigate={(tab) => setActiveTab(tab as Tab)} 
                   lang={lang}
                 />
@@ -503,6 +546,18 @@ export default function App() {
               {activeTab === 'ai' && <AIAssistant lang={lang} />}
               {activeTab === 'quick' && <QuickReference lang={lang} />}
               {activeTab === 'performance' && <CheckInPerformance lang={lang} />}
+              {activeTab === 'management' && (
+                <InstructorPanel 
+                  lang={lang}
+                  videos={videos}
+                  notifications={notifications}
+                  onAddVideo={handleAddVideo}
+                  onDeleteVideo={handleDeleteVideo}
+                  onAddNotification={handleAddNotification}
+                  onDeleteNotification={handleDeleteNotification}
+                  onAddQuiz={handleAddQuiz}
+                />
+              )}
               {activeTab === 'upcoming' && (
                 <div className="space-y-8">
                   <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
@@ -581,79 +636,6 @@ export default function App() {
                       </div>
                     </div>
                   )}
-                </div>
-              )}
-              {activeTab === 'upload' && (
-                <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                  <h2 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white mb-6">{t.uploadVideo}</h2>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Video Başlığı</label>
-                        <input 
-                          id="upload-title"
-                          type="text" 
-                          placeholder="Örn: Yeni Bagaj Kuralları"
-                          className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 dark:text-white"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Kategori</label>
-                        <select 
-                          id="upload-category"
-                          className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 dark:text-white"
-                        >
-                          <option value="Check-in">Check-in</option>
-                          <option value="Operasyon">Operasyon</option>
-                          <option value="Güvenlik">Güvenlik</option>
-                          <option value="Özel Hizmet">Özel Hizmet</option>
-                        </select>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Emoji (Opsiyonel)</label>
-                        <input 
-                          id="upload-emoji"
-                          type="text" 
-                          placeholder="Örn: ✈️"
-                          className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 dark:text-white"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-12 flex flex-col items-center justify-center text-zinc-400 hover:border-orange-300 dark:hover:border-orange-700 hover:bg-orange-50/30 dark:hover:bg-orange-900/10 transition-all cursor-pointer relative">
-                      <input 
-                        type="file" 
-                        accept="video/*"
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const title = (document.getElementById('upload-title') as HTMLInputElement).value || file.name;
-                            const category = (document.getElementById('upload-category') as HTMLSelectElement).value;
-                            const emoji = (document.getElementById('upload-emoji') as HTMLInputElement).value;
-                            
-                            const newVideo: VideoType = {
-                              id: Math.random().toString(36).substr(2, 9),
-                              title: title,
-                              instructor: user.name,
-                              duration: '00:00', // In a real app, we'd calculate this
-                              thumbnail: `https://picsum.photos/seed/${Math.random()}/800/450`,
-                              category: category,
-                              rating: 5.0,
-                              emoji: emoji || undefined
-                            };
-                            
-                            setVideos(prev => [newVideo, ...prev]);
-                            alert('Video başarıyla yüklendi ve yayına alındı!');
-                            setActiveTab('upcoming');
-                          }
-                        }}
-                      />
-                      <Upload className="w-12 h-12 mb-4 text-orange-500" />
-                      <p className="font-bold text-zinc-900 dark:text-white">Video dosyasını buraya sürükleyin veya seçin</p>
-                      <p className="text-xs mt-2">MP4, MOV veya AVI (Maks. 500MB)</p>
-                    </div>
-                  </div>
                 </div>
               )}
             </motion.div>

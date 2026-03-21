@@ -40,30 +40,62 @@ export const Login = ({ onLogin, lang, setLang }: LoginProps) => {
     }, 1000);
   };
 
-  const handleForgotSubmit = (e: React.FormEvent) => {
+  const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    setError('');
+    
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to send reset link');
+      }
+
       setIsSuccess(true);
       setTimeout(() => {
         setIsSuccess(false);
         setView('login');
       }, 3000);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSupportSubmit = (e: React.FormEvent) => {
+  const handleSupportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    setError('');
+
+    try {
+      const response = await fetch('/api/support/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, message: supportMessage }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to send support message');
+      }
+
       setIsSuccess(true);
       setTimeout(() => {
         setIsSuccess(false);
         setView('login');
       }, 3000);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -199,6 +231,17 @@ export const Login = ({ onLogin, lang, setLang }: LoginProps) => {
               />
             </div>
 
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 text-red-600 text-xs font-medium"
+              >
+                <ShieldCheck className="w-4 h-4 shrink-0" />
+                {error}
+              </motion.div>
+            )}
+
             {isSuccess && (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -233,6 +276,17 @@ export const Login = ({ onLogin, lang, setLang }: LoginProps) => {
           <form onSubmit={handleSupportSubmit} className="space-y-6">
             <p className="text-sm text-zinc-500 text-center px-4">{t.supportDesc}</p>
             <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 ml-1">{t.email}</label>
+              <input 
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+                className="w-full px-4 py-4 bg-zinc-50 border border-zinc-200 rounded-2xl text-sm focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all"
+                required
+              />
+            </div>
+            <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 ml-1">{t.message}</label>
               <textarea 
                 value={supportMessage}
@@ -242,6 +296,17 @@ export const Login = ({ onLogin, lang, setLang }: LoginProps) => {
                 required
               />
             </div>
+
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 text-red-600 text-xs font-medium"
+              >
+                <ShieldCheck className="w-4 h-4 shrink-0" />
+                {error}
+              </motion.div>
+            )}
 
             {isSuccess && (
               <motion.div 

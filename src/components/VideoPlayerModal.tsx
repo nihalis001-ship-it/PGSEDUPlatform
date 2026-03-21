@@ -38,23 +38,33 @@ export const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
 
         {/* Video Placeholder / Player */}
         <div className="w-full h-full flex items-center justify-center bg-zinc-800">
-          <div className="text-center space-y-4">
-            <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center mx-auto animate-pulse">
-              <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
-            <p className="text-white/60 font-medium">Video yükleniyor...</p>
-          </div>
-          
-          {/* In a real app, this would be an <iframe /> or <video /> tag */}
-          <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
-             <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                <span className="text-[200px]">{video.emoji || '📺'}</span>
-             </div>
-             <div className="relative z-10 text-center px-6">
-                <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">{video.title}</h2>
-                <p className="text-white/70 text-lg max-w-2xl mx-auto">Bu eğitim videosu şu an hazırlık aşamasındadır. Simülasyon gereği görselleştirme yapılmaktadır.</p>
-             </div>
-          </div>
+          {video.url ? (
+            <video 
+              src={video.url} 
+              controls 
+              autoPlay
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <>
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 bg-orange-600 rounded-full flex items-center justify-center mx-auto animate-pulse">
+                  <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <p className="text-white/60 font-medium">Video yükleniyor...</p>
+              </div>
+              
+              <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                 <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                    <span className="text-[200px]">{video.emoji || '📺'}</span>
+                 </div>
+                 <div className="relative z-10 text-center px-6">
+                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">{video.title}</h2>
+                    <p className="text-white/70 text-lg max-w-2xl mx-auto">Bu eğitim videosu şu an hazırlık aşamasındadır. Simülasyon gereği görselleştirme yapılmaktadır.</p>
+                 </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Bottom Controls */}
